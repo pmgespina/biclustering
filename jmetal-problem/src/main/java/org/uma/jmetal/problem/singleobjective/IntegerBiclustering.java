@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.uma.jmetal.problem.compositeproblem.impl.AbstractIntegerPermutationCompositeProblem;
-import org.uma.jmetal.solution.compositesolution.impl.IntegerPermutationCompositeSolution;
+import org.uma.jmetal.problem.Problem;
+import org.uma.jmetal.solution.compositesolution.IntegerCompositeSolution;
 import org.uma.jmetal.solution.permutationsolution.impl.IntegerPermutationSolution;
-;
 
-public class IntegerBiclustering extends AbstractIntegerPermutationCompositeProblem {
+public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
 
     private final int numGenes; // numGenes or number of rows involved in the bicluster
     private final int numConditions; // numConditions or number of conditions involved in the bicluster
@@ -42,8 +41,9 @@ public class IntegerBiclustering extends AbstractIntegerPermutationCompositeProb
     }
 
     @Override
-    public IntegerPermutationCompositeSolution evaluate(IntegerPermutationCompositeSolution solution) {
-        List<IntegerPermutationSolution> bicluster = solution.variables(); // Each of the variables will be one integer permutation. One for genes, one for conditions
+    public IntegerCompositeSolution evaluate(IntegerCompositeSolution solution) {
+        List<IntegerPermutationSolution> bicluster = solution.variables();
+
         IntegerPermutationSolution genes = bicluster.get(0);
         IntegerPermutationSolution conditions = bicluster.get(1);
         List<Integer> selectedGenes = genes.variables();
@@ -62,13 +62,13 @@ public class IntegerBiclustering extends AbstractIntegerPermutationCompositeProb
     }
 
     @Override
-    public IntegerPermutationCompositeSolution createSolution() {
+    public IntegerCompositeSolution createSolution() {
         List<IntegerPermutationSolution> list = new ArrayList<>();
         IntegerPermutationSolution solGenes = new IntegerPermutationSolution(numGenes, numberOfObjectives(), numberOfConstraints());
         IntegerPermutationSolution solConditions = new IntegerPermutationSolution(numConditions, numberOfObjectives(), numberOfConstraints());
         list.add(0, solGenes);
         list.add(1, solConditions);
-        IntegerPermutationCompositeSolution solution = new IntegerPermutationCompositeSolution(list);
+        IntegerCompositeSolution solution = new IntegerCompositeSolution(list);
 
         return solution;
     }

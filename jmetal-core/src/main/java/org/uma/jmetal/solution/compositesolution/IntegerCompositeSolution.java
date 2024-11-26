@@ -1,4 +1,4 @@
-package org.uma.jmetal.solution.compositesolution.impl;
+package org.uma.jmetal.solution.compositesolution;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 import org.uma.jmetal.solution.AbstractSolution;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.solution.permutationsolution.impl.IntegerPermutationSolution;
 import org.uma.jmetal.util.errorchecking.Check;
 
@@ -24,21 +23,19 @@ import org.uma.jmetal.util.errorchecking.Check;
  * @author Antonio J. Nebro
  */
 @SuppressWarnings("serial")
-public class IntegerPermutationCompositeSolution 
-    extends AbstractSolution<IntegerPermutationSolution> 
-    implements CompositeSolution<IntegerPermutationSolution>{
+public class IntegerCompositeSolution extends AbstractSolution<IntegerPermutationSolution> {
   /**
    * Constructor.
    * @param solutions Collection of solutions composing the composite solution. All of them have to have the same
    *                  number of objectives and constraints.
    */
-  public IntegerPermutationCompositeSolution(List<IntegerPermutationSolution> solutions) {
+  public IntegerCompositeSolution(List<IntegerPermutationSolution> solutions) {
     super(solutions.size(), solutions.get(0).objectives().length, solutions.get(0).constraints().length);
     Check.notNull(solutions);
     Check.collectionIsNotEmpty(solutions);
     int numberOfObjectives = solutions.get(0).objectives().length;
     int numberOfConstraints = solutions.get(0).constraints().length;
-    for (IntegerPermutationSolution solution : solutions) {
+    for (Solution<?> solution : solutions) {
       Check.that(
           solution.objectives().length == numberOfObjectives,
           "The solutions in the list must have the same number of objectives: "
@@ -58,7 +55,7 @@ public class IntegerPermutationCompositeSolution
    * Copy constructor
    * @param solution
    */
-  public IntegerPermutationCompositeSolution(IntegerPermutationCompositeSolution solution) {
+  public IntegerCompositeSolution(IntegerCompositeSolution solution) {
     super(solution.variables().size(), solution.objectives().length, solution.constraints().length) ;
 
     IntStream.range(0, solution.variables().size()).forEach(i -> variables().set(i, solution.variables().get(i).copy()));
@@ -68,10 +65,8 @@ public class IntegerPermutationCompositeSolution
     attributes = new HashMap<>(solution.attributes) ;
   }
 
-    @Override
-    public Solution<IntegerPermutationSolution> copy() {
-      return new IntegerPermutationCompositeSolution(this);
-    }
-
-  
+  @Override
+  public Solution<IntegerPermutationSolution> copy() {
+    return new IntegerCompositeSolution(this);
+  }
 }
