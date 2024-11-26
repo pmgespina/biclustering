@@ -2,6 +2,7 @@ package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIMeasures;
 import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
@@ -27,7 +28,7 @@ public class NSGAIIMeasuresRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws InterruptedException {
     String problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-    String referenceParetoFront = "resources/referenceFrontsCSV/ZDT1.csv";
+    String referenceParetoFront = "/home/khaosdev/jMetalJava/jMetal/resources/referenceFrontsCSV/ZDT1.csv";
 
     var problem = ProblemFactory.<DoubleSolution>loadProblem(problemName);
 

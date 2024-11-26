@@ -3,6 +3,7 @@ package org.uma.jmetal.lab.experiment.studies;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.lab.experiment.Experiment;
@@ -80,7 +81,7 @@ public class NSGAIIStudy {
             .setExperimentBaseDirectory(experimentBaseDirectory)
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("resources/referenceFrontsCSV")
+            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/jMetal/resources/referenceFrontsCSV")
             .setIndicatorList(
                 List.of(
                     new Epsilon(),
@@ -94,9 +95,9 @@ public class NSGAIIStudy {
             .setNumberOfCores(8)
             .build();
 
-    new ExecuteAlgorithms<>(experiment).run();
-    new ComputeQualityIndicators<>(experiment).run();
-    new GenerateLatexTablesWithStatistics(experiment).run();
+    new ExecuteAlgorithms<>(experiment).run(); // First step: Execution of all the configurations
+    new ComputeQualityIndicators<>(experiment).run(); // Second step: Apply quality indicators to the obtained fronts. We need a Pareto front per problem.
+    new GenerateLatexTablesWithStatistics(experiment).run(); // Third step: Performance assessment by statistical tests and summarizing results
     new GenerateWilcoxonTestTablesWithR<>(experiment).run();
     new GenerateFriedmanTestTables<>(experiment).run();
     new GenerateBoxplotsWithR<>(experiment).setRows(2).setColumns(3).run();

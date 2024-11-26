@@ -1,10 +1,14 @@
 package org.uma.jmetal.util;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.archive.Archive;
@@ -125,6 +129,21 @@ public class SolutionListUtils {
     }
     return objectives;
   }
+
+    public static <S extends Solution<?>> void populationFitness (List<S> solutionList, int iter) {
+      double[][] objectives = writeObjectivesToMatrix(solutionList);
+      
+      try(BufferedWriter writer = new BufferedWriter(new FileWriter("FITNESS.csv", true))) {
+        for (double[] objectiveValues : objectives) {
+          for (double value : objectiveValues) {
+            writer.write(value + " ");
+          }
+          writer.newLine();
+        }
+      } catch (IOException e) {
+        throw new JMetalException("Error writing fitness values to file: ", e);
+      }
+    }
 
   /**
    * This method receives a list of non-dominated solutions and maximum and minimum values of the

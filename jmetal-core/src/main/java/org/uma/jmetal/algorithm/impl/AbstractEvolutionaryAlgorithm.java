@@ -1,6 +1,7 @@
 package org.uma.jmetal.algorithm.impl;
 
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 

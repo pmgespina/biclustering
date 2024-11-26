@@ -59,6 +59,7 @@ public class GenerateReferenceParetoSetAndFrontFromDoubleSolutions implements Ex
   @Override
   public void run() throws IOException {
     String outputDirectoryName = experiment.getReferenceFrontDirectory();
+    System.out.println(outputDirectoryName);
     createOutputDirectory(outputDirectoryName);
 
     for (ExperimentProblem<?> problem : experiment.getProblemList()) {

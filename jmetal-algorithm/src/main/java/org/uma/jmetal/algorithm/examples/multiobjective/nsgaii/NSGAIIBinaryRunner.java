@@ -1,6 +1,8 @@
 package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
+import java.io.IOException;
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -10,11 +12,14 @@ import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
-import org.uma.jmetal.problem.ProblemFactory;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
+import org.uma.jmetal.problem.multiobjective.MultiBinaryBiclustering;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.NormalizeUtils;
+import static org.uma.jmetal.util.SolutionListUtils.populationFitness;
+import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
 
 /**
  * Class for configuring and running the NSGA-II algorithm (binary encoding)
@@ -26,26 +31,30 @@ public class NSGAIIBinaryRunner extends AbstractAlgorithmRunner {
 
   /**
    * @param args Command line arguments.
+   * @throws IOException 
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
 
-    String problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT5";
+    
+    double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    matrix = NormalizeUtils.normalize(matrix);
 
-    BinaryProblem problem = (BinaryProblem) ProblemFactory.<BinarySolution>loadProblem(problemName);
+    BinaryProblem problem = new MultiBinaryBiclustering(matrix) ;
 
     double crossoverProbability = 0.9;
     CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverProbability);
 
-    double mutationProbability = 1.0 / problem.totalNumberOfBits();
+    double mutationProbability = 0.2;
     MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationProbability);
 
     SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<>();
 
     int populationSize = 100;
+    int maxEvaluations = 100000;
     Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<>(problem, crossover, mutation,
         populationSize)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(25000)
+        .setMaxEvaluations(maxEvaluations)
         .build();
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
@@ -57,5 +66,10 @@ public class NSGAIIBinaryRunner extends AbstractAlgorithmRunner {
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     printFinalSolutionSet(population);
+
+    int numIterations = maxEvaluations / populationSize;
+    for (int i = 0; i < numIterations; i++) {
+      populationFitness(population, i);
+    }
   }
 }

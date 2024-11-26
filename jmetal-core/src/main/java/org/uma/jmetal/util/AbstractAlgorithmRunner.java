@@ -1,12 +1,12 @@
 package org.uma.jmetal.util;
 
-import static org.uma.jmetal.util.SolutionListUtils.getMatrixWithObjectiveValues;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+
 import org.uma.jmetal.qualityindicator.QualityIndicatorUtils;
 import org.uma.jmetal.solution.Solution;
+import static org.uma.jmetal.util.SolutionListUtils.getMatrixWithObjectiveValues;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;

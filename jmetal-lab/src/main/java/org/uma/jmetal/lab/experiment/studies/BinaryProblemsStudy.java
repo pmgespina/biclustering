@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.mocell.MOCellBuilder;
 import org.uma.jmetal.algorithm.multiobjective.mochc.MOCHCBuilder;
@@ -19,6 +20,7 @@ import org.uma.jmetal.lab.experiment.component.impl.ComputeQualityIndicators;
 import org.uma.jmetal.lab.experiment.component.impl.ExecuteAlgorithms;
 import org.uma.jmetal.lab.experiment.component.impl.GenerateBoxplotsWithR;
 import org.uma.jmetal.lab.experiment.component.impl.GenerateFriedmanTestTables;
+import org.uma.jmetal.lab.experiment.component.impl.GenerateHtmlPages;
 import org.uma.jmetal.lab.experiment.component.impl.GenerateLatexTablesWithStatistics;
 import org.uma.jmetal.lab.experiment.component.impl.GenerateReferenceParetoFront;
 import org.uma.jmetal.lab.experiment.component.impl.GenerateWilcoxonTestTablesWithR;
@@ -34,8 +36,7 @@ import org.uma.jmetal.operator.selection.impl.RandomSelection;
 import org.uma.jmetal.operator.selection.impl.RankingAndCrowdingSelection;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.binaryproblem.BinaryProblem;
-import org.uma.jmetal.problem.multiobjective.OneZeroMax;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT5;
+import org.uma.jmetal.problem.multiobjective.MultiBinaryBiclustering;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
 import org.uma.jmetal.qualityindicator.impl.GenerationalDistance;
 import org.uma.jmetal.qualityindicator.impl.InvertedGenerationalDistance;
@@ -44,8 +45,10 @@ import org.uma.jmetal.qualityindicator.impl.NormalizedHypervolume;
 import org.uma.jmetal.qualityindicator.impl.Spread;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.PISAHypervolume;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import org.uma.jmetal.util.genedataloader.GeneDataLoader;
 
 /**
  * Example of experimental study based on solving two binary problems with four algorithms: NSGAII,
@@ -73,9 +76,11 @@ public class BinaryProblemsStudy {
     }
     String experimentBaseDirectory = args[0];
 
+    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    matrix = NormalizeUtils.normalize(matrix);
+
     List<ExperimentProblem<BinarySolution>> problemList = new ArrayList<>();
-    problemList.add(new ExperimentProblem<>(new ZDT5()));
-    problemList.add(new ExperimentProblem<>(new OneZeroMax(512)));
+    problemList.add(new ExperimentProblem<>(new MultiBinaryBiclustering(matrix)));
 
     List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithmList =
         configureAlgorithmList(problemList);
@@ -87,7 +92,7 @@ public class BinaryProblemsStudy {
         .setExperimentBaseDirectory(experimentBaseDirectory)
         .setOutputParetoFrontFileName("FUN")
         .setOutputParetoSetFileName("VAR")
-        .setReferenceFrontDirectory(experimentBaseDirectory + "/BinaryProblemsStudy/referenceFronts")
+        .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts")
         .setIndicatorList(Arrays.asList(
             new Epsilon(),
             new Spread(),
@@ -108,6 +113,7 @@ public class BinaryProblemsStudy {
     new GenerateWilcoxonTestTablesWithR<>(experiment).run();
     new GenerateFriedmanTestTables<>(experiment).run();
     new GenerateBoxplotsWithR<>(experiment).setRows(1).setColumns(2).setDisplayNotch().run();
+    new GenerateHtmlPages<>(experiment).run();
   }
 
   /**

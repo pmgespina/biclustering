@@ -2,6 +2,7 @@ package org.uma.jmetal.algorithm.examples.singleobjective.geneticalgorithm;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;

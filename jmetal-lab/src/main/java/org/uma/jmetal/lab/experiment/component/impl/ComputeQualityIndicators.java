@@ -1,7 +1,5 @@
 package org.uma.jmetal.lab.experiment.component.impl;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,10 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.uma.jmetal.lab.experiment.Experiment;
@@ -55,7 +55,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result extends List
         String algorithmDirectory;
         algorithmDirectory = experiment.getExperimentBaseDirectory() + "/data/" + algorithm.getAlgorithmTag();
         for (ExperimentProblem<?> problem : experiment.getProblemList()) {
-          String problemDirectory = algorithmDirectory + "/" + problem.getTag();
+          String problemDirectory = algorithmDirectory + "/" + problem.getTag(); // for each problem, we get its tag 
 
           String referenceFrontDirectory = experiment.getReferenceFrontDirectory();
 
@@ -139,7 +139,6 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result extends List
         String algorithmDirectory;
         algorithmDirectory = experiment.getExperimentBaseDirectory() + "/data/" +
                 algorithm.getAlgorithmTag();
-
         for (ExperimentProblem<?> problem : experiment.getProblemList()) {
           String indicatorFileName =
                   algorithmDirectory + "/" + problem.getTag() + "/" + indicator.name();

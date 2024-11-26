@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.uma.jmetal.solution.AbstractSolution;
 import org.uma.jmetal.solution.permutationsolution.PermutationSolution;
 
@@ -28,7 +29,7 @@ public class IntegerPermutationSolution extends AbstractSolution<Integer>
       randomSequence.add(j);
     }
 
-    java.util.Collections.shuffle(randomSequence);
+    // java.util.Collections.shuffle(randomSequence);
 
     IntStream.range(0, permutationLength).forEach(i -> variables().set(i, randomSequence.get(i)));
   }

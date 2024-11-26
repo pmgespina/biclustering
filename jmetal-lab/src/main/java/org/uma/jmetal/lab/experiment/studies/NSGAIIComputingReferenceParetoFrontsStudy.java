@@ -1,9 +1,12 @@
 package org.uma.jmetal.lab.experiment.studies;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.lab.experiment.Experiment;
@@ -18,14 +21,10 @@ import org.uma.jmetal.lab.experiment.component.impl.GenerateReferenceParetoSetAn
 import org.uma.jmetal.lab.experiment.component.impl.GenerateWilcoxonTestTablesWithR;
 import org.uma.jmetal.lab.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.lab.experiment.util.ExperimentProblem;
-import org.uma.jmetal.operator.crossover.impl.SBXCrossover;
-import org.uma.jmetal.operator.mutation.impl.PolynomialMutation;
+import org.uma.jmetal.operator.crossover.impl.SinglePointCrossover;
+import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT1;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT2;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT3;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT4;
-import org.uma.jmetal.problem.multiobjective.zdt.ZDT6;
+import org.uma.jmetal.problem.multiobjective.MultiBinaryBiclustering;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
 import org.uma.jmetal.qualityindicator.impl.GenerationalDistance;
 import org.uma.jmetal.qualityindicator.impl.InvertedGenerationalDistance;
@@ -33,8 +32,11 @@ import org.uma.jmetal.qualityindicator.impl.InvertedGenerationalDistancePlus;
 import org.uma.jmetal.qualityindicator.impl.NormalizedHypervolume;
 import org.uma.jmetal.qualityindicator.impl.Spread;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.PISAHypervolume;
-import org.uma.jmetal.solution.doublesolution.DoubleSolution;
+import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.errorchecking.JMetalException;
+import org.uma.jmetal.util.genedataloader.GeneDataLoader;
+
 
 /**
  * Example of experimental study based on solving the ZDT problems with four versions of NSGA-II,
@@ -59,7 +61,9 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
  */
 public class NSGAIIComputingReferenceParetoFrontsStudy {
 
+
   private static final int INDEPENDENT_RUNS = 25;
+
 
   public static void main(String[] args) throws IOException {
     if (args.length != 1) {
@@ -67,18 +71,18 @@ public class NSGAIIComputingReferenceParetoFrontsStudy {
     }
     String experimentBaseDirectory = args[0];
 
-    List<ExperimentProblem<DoubleSolution>> problemList = new ArrayList<>();
-    problemList.add(new ExperimentProblem<>(new ZDT1()));
-    problemList.add(new ExperimentProblem<>(new ZDT2()));
-    problemList.add(new ExperimentProblem<>(new ZDT3()));
-    problemList.add(new ExperimentProblem<>(new ZDT4()));
-    problemList.add(new ExperimentProblem<>(new ZDT6()));
+    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    matrix = NormalizeUtils.normalize(matrix);
 
-    List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithmList =
+    List<ExperimentProblem<BinarySolution>> problemList = new ArrayList<>();
+    problemList.add(new ExperimentProblem<>(new MultiBinaryBiclustering(matrix)));
+
+    List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithmList =
             configureAlgorithmList(problemList);
 
-    Experiment<DoubleSolution, List<DoubleSolution>> experiment =
-            new ExperimentBuilder<DoubleSolution, List<DoubleSolution>>("NSGAIIComputingReferenceParetoFrontsStudy")
+
+    Experiment<BinarySolution, List<BinarySolution>> experiment =
+            new ExperimentBuilder<BinarySolution, List<BinarySolution>>("NSGAIIComputingReferenceParetoFrontsStudy")
                     .setAlgorithmList(algorithmList)
                     .setProblemList(problemList)
                     .setExperimentBaseDirectory(experimentBaseDirectory)
@@ -97,6 +101,7 @@ public class NSGAIIComputingReferenceParetoFrontsStudy {
                     .setNumberOfCores(8)
                     .build();
 
+
     new ExecuteAlgorithms<>(experiment).run();
     new GenerateReferenceParetoSetAndFrontFromDoubleSolutions(experiment).run();
     new ComputeQualityIndicators<>(experiment).run();
@@ -107,56 +112,56 @@ public class NSGAIIComputingReferenceParetoFrontsStudy {
     new GenerateHtmlPages<>(experiment).run() ;
   }
 
+
   /**
    * The algorithm list is composed of pairs {@link Algorithm} + {@link Problem} which form part of
    * a {@link ExperimentAlgorithm}, which is a decorator for class {@link Algorithm}. The {@link
    * ExperimentAlgorithm} has an optional tag component, that can be set as it is shown in this
    * example, where four variants of a same algorithm are defined.
    */
-  static List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> configureAlgorithmList(
-          List<ExperimentProblem<DoubleSolution>> problemList) {
-    List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
+  static List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> configureAlgorithmList(
+          List<ExperimentProblem<BinarySolution>> problemList) {
+    List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms = new ArrayList<>();
     for (int run = 0; run < INDEPENDENT_RUNS; run++) {
-      for (ExperimentProblem<DoubleSolution> experimentProblem : problemList) {
-        Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(
+      for (ExperimentProblem<BinarySolution> experimentProblem : problemList) {
+        Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<BinarySolution>(
                 experimentProblem.getProblem(),
-                new SBXCrossover(1.0, 5),
-                new PolynomialMutation(1.0 / experimentProblem.getProblem().numberOfVariables(),
-                        10.0),
+                new SinglePointCrossover(1.0),
+                new BitFlipMutation(1.0 / experimentProblem.getProblem().numberOfVariables()),
                 100)
                 .setMaxEvaluations(25000)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, "NSGAIIa", experimentProblem, run));
       }
 
-      for (ExperimentProblem<DoubleSolution> experimentProblem : problemList) {
-        Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(
+
+      for (ExperimentProblem<BinarySolution> experimentProblem : problemList) {
+        Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<BinarySolution>(
                 experimentProblem.getProblem(),
-                new SBXCrossover(1.0, 20.0),
-                new PolynomialMutation(1.0 / experimentProblem.getProblem().numberOfVariables(),
-                        20.0),
+                new SinglePointCrossover(1.0),
+                new BitFlipMutation(1.0 / experimentProblem.getProblem().numberOfVariables()),
                 100)
                 .setMaxEvaluations(25000)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, "NSGAIIb", experimentProblem, run));
       }
 
-      for (ExperimentProblem<DoubleSolution> experimentProblem : problemList) {
-        Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(
-                experimentProblem.getProblem(), new SBXCrossover(1.0, 40.0),
-                new PolynomialMutation(1.0 / experimentProblem.getProblem().numberOfVariables(),
-                        40.0),
+
+      for (ExperimentProblem<BinarySolution> experimentProblem : problemList) {
+        Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<BinarySolution>(
+                experimentProblem.getProblem(), new SinglePointCrossover(1.0),
+                new BitFlipMutation(1.0 / experimentProblem.getProblem().numberOfVariables()),
                 100)
                 .setMaxEvaluations(25000)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, "NSGAIIc", experimentProblem, run));
       }
 
-      for (ExperimentProblem<DoubleSolution> experimentProblem : problemList) {
-        Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(
-                experimentProblem.getProblem(), new SBXCrossover(1.0, 80.0),
-                new PolynomialMutation(1.0 / experimentProblem.getProblem().numberOfVariables(),
-                        80.0),
+
+      for (ExperimentProblem<BinarySolution> experimentProblem : problemList) {
+        Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<BinarySolution>(
+                experimentProblem.getProblem(), new SinglePointCrossover(1.0),
+                new BitFlipMutation(1.0 / experimentProblem.getProblem().numberOfVariables()),
                 100)
                 .setMaxEvaluations(25000)
                 .build();

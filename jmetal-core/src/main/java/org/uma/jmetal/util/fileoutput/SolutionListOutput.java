@@ -3,6 +3,7 @@ package org.uma.jmetal.util.fileoutput;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
+
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;

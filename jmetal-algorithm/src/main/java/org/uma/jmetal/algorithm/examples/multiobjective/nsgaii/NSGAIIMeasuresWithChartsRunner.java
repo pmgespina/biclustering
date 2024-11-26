@@ -2,6 +2,7 @@ package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
 import java.io.IOException;
 import java.util.List;
+
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -34,7 +35,7 @@ public class NSGAIIMeasuresWithChartsRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws IOException {
     String problemName = "org.uma.jmetal.problem.multiobjective.zdt.ZDT1";
-    String referenceParetoFront = "resources/referenceFrontsCSV/ZDT1.csv";
+    String referenceParetoFront = "/home/khaosdev/jMetalJava/jMetal/resources/referenceFrontsCSV/ZDT1.csv";
 
     var problem = ProblemFactory.<DoubleSolution>loadProblem(problemName);
 
