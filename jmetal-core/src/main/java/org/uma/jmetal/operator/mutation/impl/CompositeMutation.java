@@ -29,7 +29,7 @@ public class CompositeMutation implements MutationOperator<CompositeSolution> {
     for (Object operator : operators) {
       Check.that(
           operator instanceof MutationOperator,
-          "The operator list does not contain an object implementing class CrossoverOperator");
+          "The operator list does not contain an object implementing class MutationOperator");
       this.operators.add((MutationOperator<Solution<?>>) operator);
     }
   }
