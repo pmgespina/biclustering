@@ -34,6 +34,13 @@ public class IntegerPermutationSolution extends AbstractSolution<Integer>
     IntStream.range(0, permutationLength).forEach(i -> variables().set(i, randomSequence.get(i)));
   }
 
+  public IntegerPermutationSolution(List<Integer> list, int numberOfObjectives, int numberOfConstraints) {
+    super(list.size(),numberOfObjectives,numberOfConstraints);
+    for (int i = 0; i < list.size() ; i++) {
+      variables().set(i, list.get(i));
+    }
+  }
+
   /**
    * Copy Constructor
    */
