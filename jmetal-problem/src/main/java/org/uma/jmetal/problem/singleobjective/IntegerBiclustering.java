@@ -135,12 +135,5 @@ public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
         }
         return !selectedConditions.isEmpty() ? sum / selectedConditions.size() : 0;
     }
-
-    public int getGenesBound() {
-        return numGenes;
-    }
-
-    public int getConditionsBound() {
-        return numConditions;
-    }
+    
 }
