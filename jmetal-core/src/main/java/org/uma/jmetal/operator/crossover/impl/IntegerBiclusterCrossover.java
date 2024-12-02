@@ -30,6 +30,8 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<IntegerCompo
          */
         Check.notNull(source);
         Check.that(source.size() == 2, "There must be two parents instead of " + source.size());
+        Check.that(source.get(0).variables().get(0).variables().size() == source.get(1).variables().get(0).variables().size(), "The parents should have the same size");
+        Check.that(source.get(0).variables().get(1).variables().size() == source.get(1).variables().get(1).variables().size(), "The parents should have the same size");
 
         return doCrossover(this.crossoverProbability, source.get(0), source.get(1));
     }
