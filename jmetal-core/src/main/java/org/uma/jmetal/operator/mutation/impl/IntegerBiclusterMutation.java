@@ -48,8 +48,8 @@ public class IntegerBiclusterMutation implements MutationOperator<IntegerComposi
                         /* numero que sea distinto de -1, este en el rango de indices posibles por la matriz, y que no este ya en la lista de indices */
                         /* para que esté en el rango, cuando definamos el operador de mutacion en el runner del algoritmo definiremos los bounds */
                         /* no va a generar un -1 porque vamos a establecer que el rango de valores del randomGenerator sea de 0 a numGenes */
-                        while (bicluster.get(i).variables().contains(randomGeneratorValues.nextInt(0, bicluster.get(i).variables().size()))) { }
-                        int value = randomGeneratorValues.nextInt(0, bicluster.get(i).variables().size());
+                        while (bicluster.get(i).variables().contains(randomGeneratorValues.nextInt(0, bicluster.get(i).variables().size() - 1))) { }
+                        int value = randomGeneratorValues.nextInt(0, bicluster.get(i).variables().size() - 1);
                         bicluster.get(i).variables().set(j, value);
                     } else {
                         bicluster.get(i).variables().set(j, -1);
