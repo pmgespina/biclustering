@@ -48,8 +48,8 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<IntegerCompo
             List<Integer> parent1Conditions = parent1.variables().get(1).variables();
             List<Integer> parent2Conditions = parent2.variables().get(1).variables();
 
-            int crossoverPointGenes = this.pointRandomGenerator.nextInt(0, parent1Genes.size());
-            int crossoverPointConditions = this.pointRandomGenerator.nextInt(0, parent1Conditions.size());
+            int crossoverPointGenes = this.pointRandomGenerator.nextInt(1, parent1Genes.size() - 1);
+            int crossoverPointConditions = this.pointRandomGenerator.nextInt(1, parent1Conditions.size() - 1);
 
             List<Integer> offspring1Genes = new ArrayList<>()
                 , offspring2Genes = new ArrayList<>(), offspring1Conditions = new ArrayList<>()
