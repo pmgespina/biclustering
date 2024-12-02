@@ -81,12 +81,14 @@ public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
         double valueTSR = 0;
 
         for (Integer gene : selectedGenes) {
-            double rowMean = rowMean(gene, selectedConditions);
-            for (Integer condition: selectedConditions) {
-                double columnMean = columnMean(condition, selectedGenes);
-                double element = geneExpressionMatrix[gene][condition];
-                if (element != (-1)) {
-                    valueTSR += Math.pow(element - rowMean - columnMean + overallMean, 2);
+            if (gene != -1) {
+                double rowMean = rowMean(gene, selectedConditions);
+                for (Integer condition: selectedConditions) {
+                    if (condition != -1) {
+                        double columnMean = columnMean(condition, selectedGenes);
+                        double element = geneExpressionMatrix[gene][condition];
+                        valueTSR += Math.pow(element - rowMean - columnMean + overallMean, 2);
+                    }
                 }
             }
         }
@@ -95,8 +97,8 @@ public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
     }
 
     private double fitnessBSize(List<Integer> selectedGenes, List<Integer> selectedConditions, double alpha) {
-        // We already have this metric normalized because we give the rows (same with columns) of the bicluster a certain weight, 
-        // but this is already divided by the whole rows of the input matrix
+        /* We already have this metric normalized because we give the rows (same with columns) of the bicluster a certain weight, 
+        but this is already divided by the whole rows of the input matrix */
         List<Integer> filteredGenes = selectedGenes.stream()
                 .filter(value -> value != -1) // Keep values that actually belong to the bicluster
                 .collect(Collectors.toList());
@@ -111,10 +113,14 @@ public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
 
     private double overallMean(List<Integer> selectedGenes, List<Integer> selectedConditions) {
         double sum = 0;
-        int numElems = selectedGenes.size() * selectedConditions.size(); // porque estamos calculando medidas del bicluster, no de toda la matriz de expresión génica
+        int numElems = selectedGenes.size() * selectedConditions.size();
         for (Integer gene : selectedGenes) {
-            for (Integer condition : selectedConditions) {
-                sum += geneExpressionMatrix[gene][condition];
+            if (gene != -1) {
+                for (Integer condition : selectedConditions) {
+                    if (condition != -1) {
+                        sum += geneExpressionMatrix[gene][condition];
+                    }
+                }
             }
         }
         return numElems > 0 ? sum / numElems : 0;
@@ -122,18 +128,24 @@ public class IntegerBiclustering implements Problem<IntegerCompositeSolution> {
 
     private double columnMean(Integer condition, List<Integer> selectedGenes) {
         double sum = 0;
+        // We already know that the condition index is not 0, as it is controlled in fitnessMSR method
         for (Integer gene : selectedGenes) {
-            sum += geneExpressionMatrix[gene][condition];
+            if (gene != -1) {
+                sum += geneExpressionMatrix[gene][condition];
+            }
         }
         return !selectedGenes.isEmpty() ? sum / selectedGenes.size() : 0;
     }
 
     private double rowMean(Integer gene, List<Integer> selectedConditions) {
         double sum = 0;
+        // We already know that the gene index is not 0, as this is controlled in fitnessMSR method
         for (Integer condition : selectedConditions) {
-            sum += geneExpressionMatrix[gene][condition];
+            if (condition != -1) {
+                sum += geneExpressionMatrix[gene][condition];
+            }
         }
         return !selectedConditions.isEmpty() ? sum / selectedConditions.size() : 0;
     }
-    
+
 }
