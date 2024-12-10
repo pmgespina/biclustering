@@ -130,10 +130,10 @@ public class SolutionListUtils {
     return objectives;
   }
 
-    public static <S extends Solution<?>> void populationFitness (List<S> solutionList, int iter) {
+    public static <S extends Solution<?>> void populationFitness (List<S> solutionList) {
       double[][] objectives = writeObjectivesToMatrix(solutionList);
       
-      try(BufferedWriter writer = new BufferedWriter(new FileWriter("FITNESS.csv", true))) {
+      try(BufferedWriter writer = new BufferedWriter(new FileWriter("FITNESS.csv"))) {
         for (double[] objectiveValues : objectives) {
           for (double value : objectiveValues) {
             writer.write(value + " ");
