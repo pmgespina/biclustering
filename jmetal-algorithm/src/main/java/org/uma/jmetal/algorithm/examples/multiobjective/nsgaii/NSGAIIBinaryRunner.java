@@ -18,7 +18,6 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
-import static org.uma.jmetal.util.SolutionListUtils.populationFitness;
 import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
 
 /**
@@ -66,10 +65,5 @@ public class NSGAIIBinaryRunner extends AbstractAlgorithmRunner {
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
     printFinalSolutionSet(population);
-
-    int numIterations = maxEvaluations / populationSize;
-    for (int i = 0; i < numIterations; i++) {
-      populationFitness(population, i);
-    }
   }
 }
