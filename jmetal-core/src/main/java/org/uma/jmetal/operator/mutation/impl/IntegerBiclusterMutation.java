@@ -1,5 +1,6 @@
 package org.uma.jmetal.operator.mutation.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.uma.jmetal.operator.mutation.MutationOperator;
@@ -54,6 +55,7 @@ public class IntegerBiclusterMutation implements MutationOperator<IntegerComposi
                     } else {
                         bicluster.get(i).variables().set(j, -1);
                     }
+                    Collections.sort(bicluster.get(i).variables());
                 }
             }
         }
