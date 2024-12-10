@@ -6,7 +6,9 @@ import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
+import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
+import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.IntegerBiclusterMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.RandomSelection;
@@ -30,8 +32,8 @@ public class GenerationalGeneticAlgorithmIntegerBiclusterRunner {
   public static void main(String[] args) throws Exception {
     IntegerBiclustering problem;
     Algorithm<IntegerCompositeSolution> algorithm;
-    IntegerBiclusterCrossover crossover;
-    IntegerBiclusterMutation mutation;
+    CrossoverOperator<IntegerCompositeSolution> crossover;
+    MutationOperator<IntegerCompositeSolution> mutation;
     SelectionOperator<List<IntegerCompositeSolution>, IntegerCompositeSolution> selection;
 
     double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
@@ -39,16 +41,16 @@ public class GenerationalGeneticAlgorithmIntegerBiclusterRunner {
 
     problem = new IntegerBiclustering(matrix) ;
 
-    crossover = new IntegerBiclusterCrossover(0.9, new JavaRandomGenerator(1), new JavaRandomGenerator(1)) ;
+    crossover = new IntegerBiclusterCrossover(1, new JavaRandomGenerator(), new JavaRandomGenerator()) ;
 
-    double mutationProbability = 0.4 ;
-    mutation = new IntegerBiclusterMutation(mutationProbability, new JavaRandomGenerator(1), new JavaRandomGenerator(1)) ;
+    double mutationProbability = 1 ;
+    mutation = new IntegerBiclusterMutation(mutationProbability, new JavaRandomGenerator(), new JavaRandomGenerator()) ;
 
     selection = new RandomSelection<>();
 
     algorithm = new GeneticAlgorithmBuilder<IntegerCompositeSolution>(problem, crossover, mutation)
             .setPopulationSize(100)
-            .setMaxEvaluations(25000)
+            .setMaxEvaluations(5000)
             .setSelectionOperator(selection)
             .build() ;
 
