@@ -13,13 +13,12 @@ import org.uma.jmetal.operator.mutation.impl.IntegerBiclusterMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.RandomSelection;
 import org.uma.jmetal.problem.singleobjective.IntegerBiclustering;
-import org.uma.jmetal.solution.compositesolution.IntegerCompositeSolution;
+import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.genedataloader.GeneDataLoader;
-import org.uma.jmetal.util.pseudorandom.impl.JavaRandomGenerator;
 /**
  * Class to configure and run a generational genetic algorithm. The target problem is OneMax.
  *
@@ -31,34 +30,34 @@ public class GenerationalGeneticAlgorithmIntegerBiclusterRunner {
    */
   public static void main(String[] args) throws Exception {
     IntegerBiclustering problem;
-    Algorithm<IntegerCompositeSolution> algorithm;
-    CrossoverOperator<IntegerCompositeSolution> crossover;
-    MutationOperator<IntegerCompositeSolution> mutation;
-    SelectionOperator<List<IntegerCompositeSolution>, IntegerCompositeSolution> selection;
+    Algorithm<CompositeSolution> algorithm;
+    CrossoverOperator<CompositeSolution> crossover;
+    MutationOperator<CompositeSolution> mutation;
+    SelectionOperator<List<CompositeSolution>, CompositeSolution> selection;
 
     double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     problem = new IntegerBiclustering(matrix) ;
 
-    crossover = new IntegerBiclusterCrossover(1, new JavaRandomGenerator(), new JavaRandomGenerator()) ;
+    crossover = new IntegerBiclusterCrossover(1) ;
 
     double mutationProbability = 1 ;
-    mutation = new IntegerBiclusterMutation(mutationProbability, new JavaRandomGenerator(), new JavaRandomGenerator()) ;
+    mutation = new IntegerBiclusterMutation(mutationProbability) ;
 
     selection = new RandomSelection<>();
 
-    algorithm = new GeneticAlgorithmBuilder<IntegerCompositeSolution>(problem, crossover, mutation)
+    algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
             .setPopulationSize(100)
-            .setMaxEvaluations(5000)
+            .setMaxEvaluations(25000)
             .setSelectionOperator(selection)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
-    IntegerCompositeSolution solution = algorithm.result() ;
-    List<IntegerCompositeSolution> population = new ArrayList<>(1) ;
+    CompositeSolution solution = algorithm.result() ;
+    List<CompositeSolution> population = new ArrayList<>(1) ;
     population.add(solution) ;
 
     long computingTime = algorithmRunner.getComputingTime() ;
