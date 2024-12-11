@@ -1,12 +1,17 @@
 package org.uma.jmetal.problem.singleobjective;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.listsolution.impl.IntegerListSolution;
+import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.solution.compositesolution.CompositeSolution;
+import org.uma.jmetal.solution.integersolution.IntegerSolution;
+import org.uma.jmetal.solution.integersolution.impl.DefaultIntegerSolution;
+import org.uma.jmetal.util.bounds.Bounds;
 
-public class IntegerBiclustering implements Problem<IntegerListSolution> {
+public class IntegerBiclustering implements Problem<CompositeSolution> {
 
     private final int numGenes; // numGenes or number of rows involved in the bicluster
     private final int numConditions; // numConditions or number of conditions involved in the bicluster
@@ -20,7 +25,7 @@ public class IntegerBiclustering implements Problem<IntegerListSolution> {
 
     @Override
     public int numberOfVariables() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -39,9 +44,9 @@ public class IntegerBiclustering implements Problem<IntegerListSolution> {
     }
 
     @Override
-    public IntegerListSolution evaluate(IntegerListSolution solution) {
-        List<Integer> selectedGenes = solution.variables().subList(0, numGenes);
-        List<Integer> selectedConditions = solution.variables().subList(numGenes, numConditions);
+    public CompositeSolution evaluate(CompositeSolution solution) {
+        List<Integer> selectedGenes = ((IntegerSolution) solution.variables().get(0)).variables();
+        List<Integer> selectedConditions = ((IntegerSolution) solution.variables().get(1)).variables();
 
         double MSR = fitnessMSR(selectedGenes, selectedConditions);
         double MSRNormalized = MSR / 4;
@@ -56,9 +61,40 @@ public class IntegerBiclustering implements Problem<IntegerListSolution> {
     }
 
     @Override
-    public IntegerListSolution createSolution() {
-        IntegerListSolution solution = new IntegerListSolution(numGenes + numConditions, numberOfObjectives());
+    public CompositeSolution createSolution() {
+        IntegerSolution selectedGenes = new DefaultIntegerSolution(rowsBounds(), numberOfObjectives(), numberOfConstraints());
+        IntegerSolution selectedConditions = new DefaultIntegerSolution(columnBounds(), numberOfObjectives(), numberOfConstraints());
+        /* The IntegerSolutions are already initialised taking into account the bounds restriction
+         * If rowsBounds() returns a list with 10 bounds, the variables list will have 10 elements
+         */
+
+        List<Solution<?>> solutions = new ArrayList<>();
+        solutions.add(selectedGenes);
+        solutions.add(selectedConditions);
+
+        CompositeSolution solution = new CompositeSolution(solutions);
+        
         return solution;
+    }
+
+    private List<Bounds<Integer>> rowsBounds() {
+        List<Bounds<Integer>> rowsBounds = new ArrayList<>();
+        // To apply the bounds restriction to all the elements of the list
+        for (int i = 0; i < numGenes; i++) {
+            // Supposing that the upper bound cannot be numGenes because the index starts at 0
+            rowsBounds.add(Bounds.create(-1, numGenes - 1));
+        }
+        return rowsBounds;
+    }
+
+    private List<Bounds<Integer>> columnBounds() {
+        List<Bounds<Integer>> columnBounds = new ArrayList<>();
+        // To apply the bounds restriction to all the elements of the list
+        for (int i = 0; i < numConditions; i++) {
+            // Supposing that the upper bound cannot be numConditions because the index starts at 0
+            columnBounds.add(Bounds.create(-1, numConditions - 1));
+        }
+        return columnBounds;
     }
 
     private double fitnessMSR(List<Integer> selectedGenes, List<Integer> selectedConditions) {

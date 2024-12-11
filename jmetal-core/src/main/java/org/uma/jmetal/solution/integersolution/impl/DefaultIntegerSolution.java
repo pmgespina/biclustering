@@ -3,6 +3,7 @@ package org.uma.jmetal.solution.integersolution.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.uma.jmetal.solution.AbstractSolution;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.bounds.Bounds;
