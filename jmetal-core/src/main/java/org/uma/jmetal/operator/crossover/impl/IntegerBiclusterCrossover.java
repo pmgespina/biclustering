@@ -1,6 +1,8 @@
 package org.uma.jmetal.operator.crossover.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +44,7 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
         CompositeSolution parent1 = source.get(0);
         CompositeSolution parent2 = source.get(1);
 
-        List<CompositeSolution> offspring = new ArrayList<>();
+        List<CompositeSolution> offspring = new ArrayList<>(2);
         offspring.add((CompositeSolution) parent1.copy());
         offspring.add((CompositeSolution) parent2.copy());
 
@@ -56,6 +58,9 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
             IntegerSolution parentConditions1 = (IntegerSolution) parent1.variables().get(1);
             IntegerSolution parentConditions2 = (IntegerSolution) parent2.variables().get(1);
 
+            Check.that(parentGenes1.variables().size() == parentGenes2.variables().size(), "Gene index lists must have the same length");
+            Check.that(parentConditions1.variables().size() == parentConditions2.variables().size(), "Condition index lists must have the same length");
+
             /* To ensure that crossover will happen we establish these indexes in the ints operator */
             int crossoverPointGenes = this.pointRandomGenerator.ints(1, parentGenes1.variables().size() - 1).findFirst().getAsInt();
             int crossoverPointConditions = this.pointRandomGenerator.ints(1, parentConditions1.variables().size() - 1).findFirst().getAsInt();
@@ -64,17 +69,34 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
                 , offspringGenes2 = new ArrayList<>(), offspringConditions1 = new ArrayList<>()
                 , offspringConditions2 = new ArrayList<>();
 
+            // Tenemos que asegurarnos de que no haya ningun elemento repetido en la misma lista de genes o de condiciones
+            // Tambien de que la lista de genes sea de longitud numGenes y de que la lista de condiciones sea numConditions
             offspringGenes1.addAll(parentGenes1.variables().subList(0, crossoverPointGenes));
             offspringGenes1.addAll(parentGenes2.variables().subList(crossoverPointGenes, parentGenes2.variables().size()));
+            Check.that(offspringGenes1.size() == parentGenes1.variables().size(), "The parentGenes1 and the offspringGenes1 must have the same length");
+            replaceDuplicates(offspringGenes1);
+
             offspringConditions1.addAll(parentConditions1.variables().subList(0, crossoverPointConditions));
             offspringConditions1.addAll(parentConditions2.variables().subList(crossoverPointConditions, parentConditions2.variables().size()));
+            Check.that(offspringConditions1.size() == parentConditions1.variables().size(), "The parentConditions1 and the offspringConditions1 must have the same length");
+            replaceDuplicates(offspringGenes2);
 
             offspringGenes2.addAll(parentGenes2.variables().subList(0, crossoverPointGenes));
             offspringGenes2.addAll(parentGenes1.variables().subList(crossoverPointGenes, parentGenes1.variables().size()));
+            Check.that(offspringGenes2.size() == parentGenes2.variables().size(), "The parentGenes2 and the offspringGenes2 must have the same length");
+            replaceDuplicates(offspringConditions1);
+
             offspringConditions2.addAll(parentConditions2.variables().subList(0, crossoverPointConditions));
             offspringConditions2.addAll(parentConditions1.variables().subList(crossoverPointConditions, parentConditions1.variables().size()));
+            Check.that(offspringConditions2.size() == parentConditions2.variables().size(), "The parentConditions2 and the offspringConditions2 must have the same length");
+            replaceDuplicates(offspringConditions2);
 
-            /* We get the gene bounds in order to create the Integersolution that will be stored in the offspring. 
+            Collections.sort(offspringGenes1);
+            Collections.sort(offspringGenes2);
+            Collections.sort(offspringConditions1);
+            Collections.sort(offspringConditions2);
+
+            /* We get the gene bounds in order to create the IntegerSolution that will be stored in the offspring. 
              * Like this we will ensure that the bounds are preserved from the parents to the offspring.
              * The bounds in the parent number one have to be the same as the bounds in parent number two for genes.
              * The same happens with the bounds for the conditions in both parents.
@@ -111,6 +133,16 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
         }
 
         return offspring;
+    }
+
+    private void replaceDuplicates(List<Integer> list) {
+        HashSet<Integer> seen = new HashSet<>();
+        for (int i = 0; i < list.size(); i++) {
+            int element = list.get(i);
+            if (element != -1 && !seen.add(element)) {
+                list.set(i, -1); // Replace the duplicate with -1
+            }
+        }
     }
 
         
