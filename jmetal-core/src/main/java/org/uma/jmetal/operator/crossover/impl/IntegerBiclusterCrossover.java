@@ -30,8 +30,8 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
 
     @Override
     public List<CompositeSolution> execute(List<CompositeSolution> source) {
-        /* Lo que se pasa como parametro es una lista de listas, porque IntegerCompositeSolution
-         * a su vez tendrá dos listas de IntegerPermutationSolutions, representando a los genes
+        /* Lo que se pasa como parametro es una lista de listas, porque CompositeSolution
+         * a su vez tendrá dos listas de IntegerSolution, representando a los genes
          * y a las condiciones respectivamente
          */
         Check.notNull(source);
