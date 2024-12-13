@@ -35,8 +35,8 @@ public class GenerationalGeneticAlgorithmIntegerBiclusterRunner {
     MutationOperator<CompositeSolution> mutation;
     SelectionOperator<List<CompositeSolution>, CompositeSolution> selection;
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
-    matrix = NormalizeUtils.normalize(matrix);
+    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
+    matrix = NormalizeUtils.normalize(matrix) ;
 
     problem = new IntegerBiclustering(matrix) ;
 
