@@ -38,7 +38,7 @@ public class ObservableGeneticAlgorithmIntegerBiclusterRunner {
     double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
-    FitnessObserver fitnessObserver = new FitnessObserver(100); // Log every 10 evaluations
+    FitnessObserver fitnessObserver = new FitnessObserver(10); // Log every 10 evaluations
 
     problem = new IntegerBiclustering(matrix) ;
 
@@ -49,7 +49,7 @@ public class ObservableGeneticAlgorithmIntegerBiclusterRunner {
 
     selection = new RandomSelection<>();
 
-    algorithm = new ObservableGeneticAlgorithm(problem, 25000, 100, crossover, mutation, selection);
+    algorithm = new ObservableGeneticAlgorithm(problem, 500, 100, crossover, mutation, selection);
 
     algorithm.getObservable().register(fitnessObserver);
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
