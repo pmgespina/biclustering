@@ -1,6 +1,7 @@
 package org.uma.jmetal.problem.singleobjective;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,20 +63,42 @@ public class IntegerBiclustering implements Problem<CompositeSolution> {
 
     @Override
     public CompositeSolution createSolution() {
+        // IntegerSolutions are initialised randomly with repeated elements possibly
         IntegerSolution selectedGenes = new DefaultIntegerSolution(rowsBounds(), numberOfObjectives(), numberOfConstraints());
         IntegerSolution selectedConditions = new DefaultIntegerSolution(columnBounds(), numberOfObjectives(), numberOfConstraints());
-        /* The IntegerSolutions are already initialised taking into account the bounds restriction
-         * If rowsBounds() returns a list with 10 bounds, the variables list will have 10 elements
-         */
+    
+        // Ensure no duplicates in selectedGenes
+        List<Integer> uniqueGenes = new ArrayList<>();
+        for (int i = 0; i < selectedGenes.variables().size(); i++) {
+            int value = selectedGenes.variables().get(i);
+            if (uniqueGenes.contains(value)) {
+                selectedGenes.variables().set(i, -1);
+            } else {
+                uniqueGenes.add(value);
+            }
+        }
+    
+        // Ensure no duplicates in selectedConditions
+        List<Integer> uniqueConditions = new ArrayList<>();
+        for (int i = 0; i < selectedConditions.variables().size(); i++) {
+            int value = selectedConditions.variables().get(i);
+            if (uniqueConditions.contains(value)) {
+                selectedConditions.variables().set(i, -1);
+            } else {
+                uniqueConditions.add(value);
+            }
+        }
 
+        Collections.sort(selectedGenes.variables());
+        Collections.sort(selectedConditions.variables());
+    
         List<Solution<?>> solutions = new ArrayList<>();
         solutions.add(selectedGenes);
         solutions.add(selectedConditions);
-
-        CompositeSolution solution = new CompositeSolution(solutions);
-        
-        return solution;
+    
+        return new CompositeSolution(solutions);
     }
+    
 
     private List<Bounds<Integer>> rowsBounds() {
         List<Bounds<Integer>> rowsBounds = new ArrayList<>();
