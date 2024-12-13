@@ -61,8 +61,8 @@ public class IntegerBiclusterMutation implements MutationOperator<CompositeSolut
                     /* numero que sea distinto de -1, este en el rango de indices posibles por la matriz, y que no este ya en la lista de indices */
                     /* para que esté en el rango, cuando definamos el operador de mutacion en el runner del algoritmo definiremos los bounds */
                     /* no va a generar un -1 porque vamos a establecer que el rango de valores del randomGenerator sea de 0 a numGenes */
-                    while (selectedGenes.variables().contains(randomGeneratorValues.nextInt(selectedGenes.variables().size()))) { }
                     int value = randomGeneratorValues.nextInt(selectedGenes.variables().size());
+                    while (selectedGenes.variables().contains(value)) { }
                     selectedGenes.variables().set(i, value);
                 } else {
                     selectedGenes.variables().set(i, -1);
