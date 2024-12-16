@@ -1,6 +1,7 @@
 package org.uma.jmetal.algorithm.singleobjective.geneticalgorithm;
 
 import java.util.List;
+
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.mutation.MutationOperator;
@@ -16,7 +17,7 @@ import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
  * Created by ajnebro on 10/12/14.
  */
 public class GeneticAlgorithmBuilder<S extends Solution<?>> {
-  public enum GeneticAlgorithmVariant {GENERATIONAL, STEADY_STATE}
+  public enum GeneticAlgorithmVariant {GENERATIONAL, STEADY_STATE, OBSERVABLE}
   /**
    * Builder class
    */
@@ -86,6 +87,9 @@ public class GeneticAlgorithmBuilder<S extends Solution<?>> {
     } else if (variant == GeneticAlgorithmVariant.STEADY_STATE) {
       return new SteadyStateGeneticAlgorithm<S>(problem, maxEvaluations, populationSize,
           crossoverOperator, mutationOperator, selectionOperator);
+    } else if (variant == GeneticAlgorithmVariant.OBSERVABLE) {
+      return new ObservableGeneticAlgorithm<>(problem, maxEvaluations, populationSize, 
+          crossoverOperator, mutationOperator, defaultSelectionOperator, evaluator);
     } else {
       throw new JMetalException("Unknown variant: " + variant) ;
     }
