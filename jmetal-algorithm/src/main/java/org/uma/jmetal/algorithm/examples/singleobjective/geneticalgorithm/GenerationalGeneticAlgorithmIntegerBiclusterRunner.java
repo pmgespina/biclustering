@@ -3,9 +3,10 @@ package org.uma.jmetal.algorithm.examples.singleobjective.geneticalgorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GenerationalGeneticAlgorithm;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder.GeneticAlgorithmVariant;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
 import org.uma.jmetal.operator.mutation.MutationOperator;
@@ -30,27 +31,27 @@ public class GenerationalGeneticAlgorithmIntegerBiclusterRunner {
    */
   public static void main(String[] args) throws Exception {
     IntegerBiclustering problem;
-    Algorithm<CompositeSolution> algorithm;
+    GenerationalGeneticAlgorithm<CompositeSolution> algorithm;
     CrossoverOperator<CompositeSolution> crossover;
     MutationOperator<CompositeSolution> mutation;
     SelectionOperator<List<CompositeSolution>, CompositeSolution> selection;
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
+    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix) ;
 
     problem = new IntegerBiclustering(matrix) ;
 
     crossover = new IntegerBiclusterCrossover(1) ;
 
-    double mutationProbability = 1 ;
-    mutation = new IntegerBiclusterMutation(mutationProbability) ;
+    mutation = new IntegerBiclusterMutation(1) ;
 
     selection = new RandomSelection<>();
 
-    algorithm = new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
+    algorithm = (GenerationalGeneticAlgorithm<CompositeSolution>) new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
             .setPopulationSize(100)
             .setMaxEvaluations(25000)
             .setSelectionOperator(selection)
+            .setVariant(GeneticAlgorithmVariant.GENERATIONAL)
             .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

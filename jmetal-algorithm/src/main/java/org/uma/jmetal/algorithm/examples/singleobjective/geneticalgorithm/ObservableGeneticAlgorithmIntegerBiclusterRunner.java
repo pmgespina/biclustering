@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder;
+import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.GeneticAlgorithmBuilder.GeneticAlgorithmVariant;
 import org.uma.jmetal.algorithm.singleobjective.geneticalgorithm.ObservableGeneticAlgorithm;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
@@ -38,20 +40,25 @@ public class ObservableGeneticAlgorithmIntegerBiclusterRunner {
     double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
-    FitnessObserver fitnessObserver = new FitnessObserver(10); // Log every 10 evaluations
+    FitnessObserver fitnessObserver = new FitnessObserver(100); // Log every 10 evaluations
 
     problem = new IntegerBiclustering(matrix) ;
 
     crossover = new IntegerBiclusterCrossover(1) ;
 
-    double mutationProbability = 1 ;
-    mutation = new IntegerBiclusterMutation(mutationProbability) ;
+    mutation = new IntegerBiclusterMutation(1) ;
 
     selection = new RandomSelection<>();
 
-    algorithm = new ObservableGeneticAlgorithm(problem, 500, 100, crossover, mutation, selection);
+    algorithm = (ObservableGeneticAlgorithm<CompositeSolution>) new GeneticAlgorithmBuilder<>(problem, crossover, mutation)
+            .setPopulationSize(100)
+            .setMaxEvaluations(25000)
+            .setSelectionOperator(selection)
+            .setVariant(GeneticAlgorithmVariant.OBSERVABLE)
+            .build() ;
 
     algorithm.getObservable().register(fitnessObserver);
+
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
             .execute() ;
 
