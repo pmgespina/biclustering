@@ -1,6 +1,8 @@
 package org.uma.jmetal.operator.mutation.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -21,13 +23,13 @@ public class IntegerBiclusterMutation implements MutationOperator<CompositeSolut
     private Random randomGeneratorProbability;
     private Random randomGeneratorValues;
 
-    public IntegerBiclusterMutation(double probability) {
-        this(probability, new Random(), new Random());
+    public IntegerBiclusterMutation(double mutationProbability) {
+        this(mutationProbability, new Random(), new Random());
     }
 
-    public IntegerBiclusterMutation(double probability, 
+    public IntegerBiclusterMutation(double mutationProbability, 
             Random randomGeneratorProbability, Random randomGeneratorValues) {
-        this.mutationProbability = probability;
+        this.mutationProbability = mutationProbability;
         this.randomGeneratorProbability = randomGeneratorProbability;
         this.randomGeneratorValues = randomGeneratorValues;
     }
@@ -55,36 +57,40 @@ public class IntegerBiclusterMutation implements MutationOperator<CompositeSolut
         IntegerSolution selectedGenes = (IntegerSolution) bicluster.get(0);
         IntegerSolution selectedConditions = (IntegerSolution) bicluster.get(1);
 
-        for (int i = 0 ; i < selectedGenes.variables().size(); i++) {
-            if (this.randomGeneratorProbability.nextDouble() <= this.mutationProbability) {
-                if (selectedGenes.variables().get(i).equals(-1)) {
-                    /* numero que sea distinto de -1, este en el rango de indices posibles por la matriz, y que no este ya en la lista de indices */
-                    /* para que esté en el rango, cuando definamos el operador de mutacion en el runner del algoritmo definiremos los bounds */
-                    /* no va a generar un -1 porque vamos a establecer que el rango de valores del randomGenerator sea de 0 a numGenes */
-                    int value = randomGeneratorValues.nextInt(selectedGenes.variables().size());
-                    while (selectedGenes.variables().contains(value)) { }
-                    selectedGenes.variables().set(i, value);
-                } else {
-                    selectedGenes.variables().set(i, -1);
-                }
-                Collections.sort(selectedGenes.variables());
-            }
-        }
-
-        for (int i = 0 ; i < selectedConditions.variables().size(); i++) {
-            if (this.randomGeneratorProbability.nextDouble() <= this.mutationProbability) {
-                if (selectedConditions.variables().get(i).equals(-1)) {
-                    while (selectedConditions.variables().contains(randomGeneratorValues.nextInt(selectedConditions.variables().size()))) { }
-                    int value = randomGeneratorValues.nextInt(selectedConditions.variables().size());
-                    selectedConditions.variables().set(i, value);
-                } else {
-                    selectedConditions.variables().set(i, -1);
-                }
-                Collections.sort(selectedConditions.variables());
-            }
-        }
+        executeMutation(selectedGenes.variables());
+        executeMutation(selectedConditions.variables());
 
         return solution;
+    }
+
+    private void executeMutation (List<Integer> indexList) {
+        for (int i = 0 ; i < indexList.size(); i++) {
+            if (this.randomGeneratorProbability.nextDouble() <= this.mutationProbability) {
+                if (indexList.get(i).equals(-1)) {
+                    /* A number not equals to -1, that is in the range of available values for the matrix, and not already present in the index list */
+                    /* For the value to be in the range we will generate values only from 0 (inclusive) until list.size() (exclusive) (-1 value will not be possible to generate) */
+                    /* We create a set where all the non-repeated indexes will be stored, and an auxiliar list where the non-present index will be stored */
+                    HashSet<Integer> currentIndexes = new HashSet<>(indexList);
+                    List<Integer> availableIndexes = new ArrayList<>();
+                    
+                    /* We start to include the available indexes in the auxiliar list */
+                    for (Integer index : indexList) {
+                        if (!currentIndexes.contains(index)) {
+                            availableIndexes.add(index);
+                        }
+                    }
+
+                    /* When there are available indexes that can be obtained, we will change the -1 index for those available indexes in a random way*/
+                    if (!availableIndexes.isEmpty()) {
+                        int indexValue = randomGeneratorValues.nextInt(availableIndexes.size());
+                        indexList.set(i, availableIndexes.get(indexValue));
+                    }
+                } else {
+                    indexList.set(i, -1);
+                }
+                Collections.sort(indexList);
+            }
+        }
     }
 
 }
