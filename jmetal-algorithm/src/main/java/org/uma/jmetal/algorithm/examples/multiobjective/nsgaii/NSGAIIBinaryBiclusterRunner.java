@@ -26,7 +26,7 @@ import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressi
  * @author Antonio J. Nebro
  */
 
-public class NSGAIIBinaryRunner extends AbstractAlgorithmRunner {
+public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
 
   /**
    * @param args Command line arguments.

@@ -23,7 +23,7 @@ import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressi
  * @author Antonio J. Nebro
  */
 
-public class NSGAIIIntegerRunner extends AbstractAlgorithmRunner {
+public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
 
   /**
    * @param args Command line arguments.
