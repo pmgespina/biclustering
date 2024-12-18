@@ -68,7 +68,7 @@ public class ComputeQualityIndicators<S extends Solution<?>, Result extends List
 
           indicator.referenceFront(normalizedReferenceFront);
 
-
+          //This was already commented not by me
           //Front referenceFront = new ArrayFront(referenceFrontName, ",");
 
           //FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront);
