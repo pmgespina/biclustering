@@ -82,8 +82,8 @@ public class NSGAIIManualBinaryBiclusteringExperiment extends AbstractAlgorithmR
             }
 
             // Output the results of each run to a FUN and VAR file
-            String funFileName = "/home/khaosdev/jMetalJava/experiment1_data/FUN_run_" + (run + 1) + ".csv";
-            String varFileName = "/home/khaosdev/jMetalJava/experiment1_data/VAR_run_" + (run + 1) + ".csv";
+            String funFileName = "/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualBinaryExperiment/FUN_run_" + (run + 1) + ".csv";
+            String varFileName = "/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualBinaryExperiment/VAR_run_" + (run + 1) + ".csv";
 
             new SolutionListOutput(result)
                 .setFunFileOutputContext(new DefaultFileOutputContext(funFileName))
@@ -96,8 +96,8 @@ public class NSGAIIManualBinaryBiclusteringExperiment extends AbstractAlgorithmR
         // Output the best Pareto front based on hypervolume
         if (bestParetoFront != null) {
             new SolutionListOutput(bestParetoFront)
-                .setFunFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/experiment1_data/BEST_FUN_hypervolume_point.csv"))
-                .setVarFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/experiment1_data/BEST_VAR_hypervolume_point.csv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualBinaryExperiment/BEST_FUN.csv"))
+                .setVarFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualBinaryExperiment/BEST_VAR.csv"))
                 .print();
 
             JMetalLogger.logger.info("Best hypervolume: " + bestHypervolume);
