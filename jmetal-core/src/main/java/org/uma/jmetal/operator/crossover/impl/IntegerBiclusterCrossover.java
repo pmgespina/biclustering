@@ -17,17 +17,21 @@ import org.uma.jmetal.util.errorchecking.Check;
 public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSolution> {
 
     private double crossoverProbability;
-    private Random crossoverRandomGenerator;
-    private Random pointRandomGenerator;
+    private double duplicatesProbability;
+    private Random randomGenerator;
 
     public IntegerBiclusterCrossover(double crossoverProbability) {
-        this(crossoverProbability, new Random(), new Random());
+        this(crossoverProbability, 1, new Random());
     }
 
-    public IntegerBiclusterCrossover(double crossoverProbability, Random crossRandomGenerator, Random pointRandomGenerator) {
+    public IntegerBiclusterCrossover(double crossoverProbability, double duplicatesProbability) {
+        this (crossoverProbability, duplicatesProbability, new Random());
+    }
+
+    public IntegerBiclusterCrossover(double crossoverProbability, double duplicatesProbability, Random random) {
         this.crossoverProbability = crossoverProbability;
-        this.crossoverRandomGenerator = crossRandomGenerator;
-        this.pointRandomGenerator = pointRandomGenerator;
+        this.duplicatesProbability = duplicatesProbability;
+        this.randomGenerator = random;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
         offspring.add((CompositeSolution) parent1.copy());
         offspring.add((CompositeSolution) parent2.copy());
 
-        if (this.crossoverRandomGenerator.nextDouble() <= this.crossoverProbability) {
+        if (this.randomGenerator.nextDouble() <= this.crossoverProbability) {
             /*
              * Define the solutions that will contain the genes and conditions for the parents
              * We will have to access the lists in the solutions using variables() later
@@ -62,8 +66,8 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
             Check.that(parentConditions1.variables().size() == parentConditions2.variables().size(), "Condition index lists must have the same length");
 
             /* To ensure that crossover will happen we establish these indexes in the ints operator */
-            int crossoverPointGenes = this.pointRandomGenerator.ints(1, parentGenes1.variables().size() - 1).findFirst().getAsInt();
-            int crossoverPointConditions = this.pointRandomGenerator.ints(1, parentConditions1.variables().size() - 1).findFirst().getAsInt();
+            int crossoverPointGenes = this.randomGenerator.ints(1, parentGenes1.variables().size() - 1).findFirst().getAsInt();
+            int crossoverPointConditions = this.randomGenerator.ints(1, parentConditions1.variables().size() - 1).findFirst().getAsInt();
 
             List<Integer> offspringGenes1 = new ArrayList<>()
                 , offspringGenes2 = new ArrayList<>(), offspringConditions1 = new ArrayList<>()
@@ -140,9 +144,25 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
         for (int i = 0; i < list.size(); i++) {
             int element = list.get(i);
             if (element != -1 && !seen.add(element)) {
-                list.set(i, -1); // Replace the duplicate with -1
+                if (this.randomGenerator.nextDouble() <= this.duplicatesProbability) {
+                    list.set(i, -1); // Replace the duplicate with -1
+                } else {
+                    list.set(i, missingElement(list)); // Replace the duplicate with an element that is not present in the list
+                }
             }
         }
+    }
+
+    private Integer missingElement(List<Integer> list) {
+        HashSet<Integer> set = new HashSet<>(list);
+
+        for (int i = 0; i < list.size(); i++) {
+            if (!set.contains(i)) {
+                return i;
+            }
+        }
+
+        return null;
     }
 
         
