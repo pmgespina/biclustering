@@ -17,8 +17,8 @@ import org.uma.jmetal.lab.experiment.component.impl.GenerateLatexTablesWithStati
 import org.uma.jmetal.lab.experiment.component.impl.GenerateWilcoxonTestTablesWithR;
 import org.uma.jmetal.lab.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.lab.experiment.util.ExperimentProblem;
-import org.uma.jmetal.operator.crossover.impl.SinglePointCrossover;
-import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
+import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
+import org.uma.jmetal.operator.mutation.impl.IntegerBiclusterMutation;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.multiobjective.MultiIntegerBiclustering;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
@@ -62,7 +62,7 @@ public class NSGAIIStudyBiclusteringInteger {
     }
     String experimentBaseDirectory = args[0];
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
+    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     List<ExperimentProblem<CompositeSolution>> problemList = new ArrayList<>();
@@ -72,13 +72,13 @@ public class NSGAIIStudyBiclusteringInteger {
         configureAlgorithmList(problemList);
 
     Experiment<CompositeSolution, List<CompositeSolution>> experiment =
-        new ExperimentBuilder<CompositeSolution, List<CompositeSolution>>("NSGAIIReferenceFrontIntegerExperiment")
+        new ExperimentBuilder<CompositeSolution, List<CompositeSolution>>("NSGAIIIntegerExperiment")
             .setAlgorithmList(algorithmList)
             .setProblemList(problemList)
             .setExperimentBaseDirectory(experimentBaseDirectory)
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts")
+            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontIntegerExperiment/NSGAIIComputingReferenceParetoFrontsIntegerStudy/referenceFronts")
             .setIndicatorList(
                 List.of(
                     new Epsilon(),
@@ -128,8 +128,8 @@ public class NSGAIIStudyBiclusteringInteger {
     Algorithm<List<CompositeSolution>> algorithm =
         new NSGAIIBuilder<>(
             experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
+            new IntegerBiclusterCrossover(1.0),
+            new IntegerBiclusterMutation(
                 1.0 / experimentProblem.getProblem().numberOfVariables()),
             100)
             .setMaxEvaluations(25000)
@@ -144,8 +144,8 @@ public class NSGAIIStudyBiclusteringInteger {
     Algorithm<List<CompositeSolution>> algorithm =
         new NSGAIIBuilder<>(
             experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
+            new IntegerBiclusterCrossover(1.0),
+            new IntegerBiclusterMutation(
                 1.0 / experimentProblem.getProblem().numberOfVariables()),
             10)
             .setMaxEvaluations(25000)
@@ -160,8 +160,8 @@ public class NSGAIIStudyBiclusteringInteger {
     Algorithm<List<CompositeSolution>> algorithm =
         new NSGAIIBuilder<>(
             experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
+            new IntegerBiclusterCrossover(1.0),
+            new IntegerBiclusterMutation(
                 1.0 / experimentProblem.getProblem().numberOfVariables()),
             100)
             .setMaxEvaluations(25000)
@@ -176,8 +176,8 @@ public class NSGAIIStudyBiclusteringInteger {
     Algorithm<List<CompositeSolution>> algorithm =
         new NSGAIIBuilder<>(
             experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
+            new IntegerBiclusterCrossover(1.0),
+            new IntegerBiclusterMutation(
                 1.0 / experimentProblem.getProblem().numberOfVariables()),
             100)
             .setMaxEvaluations(25000)
