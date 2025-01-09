@@ -28,7 +28,7 @@ public class NSGAIIManualIntegerBiclusteringExperiment extends AbstractAlgorithm
         int numRuns = 25;  // Number of times to run the algorithm
         List<List<CompositeSolution>> paretoFronts = new ArrayList<>();
 
-        double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+        double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
         matrix = NormalizeUtils.normalize(matrix);
 
         // Problem configuration
@@ -41,7 +41,7 @@ public class NSGAIIManualIntegerBiclusteringExperiment extends AbstractAlgorithm
         SelectionOperator<List<CompositeSolution>, CompositeSolution> selection = new RandomSelection<>();
 
         // Define the reference point for hypervolume calculation
-        double[] referencePoint = {0.0021251612059361223, -0.4565, -0.029419272186315147};
+        double[] referencePoint = {0.005, -0.05, -0.005};
 
         int populationSize = 100;
         double bestHypervolume = Double.NEGATIVE_INFINITY;
@@ -79,8 +79,8 @@ public class NSGAIIManualIntegerBiclusteringExperiment extends AbstractAlgorithm
             }
 
             // Output the results of each run to a FUN and VAR file
-            String funFileName = "/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualIntegerExperiment/FUN_run_" + (run + 1) + ".csv";
-            String varFileName = "/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualIntegerExperiment/VAR_run_" + (run + 1) + ".csv";
+            String funFileName = "/home/khaosdev/jMetalJava/fabia100x100/NSGAIIManualIntegerExperiment/FUN_run_" + (run + 1) + ".csv";
+            String varFileName = "/home/khaosdev/jMetalJava/fabia100x100/NSGAIIManualIntegerExperiment/VAR_run_" + (run + 1) + ".csv";
 
             new SolutionListOutput(result)
                 .setFunFileOutputContext(new DefaultFileOutputContext(funFileName))
@@ -93,8 +93,8 @@ public class NSGAIIManualIntegerBiclusteringExperiment extends AbstractAlgorithm
         // Output the best Pareto front based on hypervolume
         if (bestParetoFront != null) {
             new SolutionListOutput(bestParetoFront)
-                .setFunFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualIntegerExperiment/BEST_FUN.csv"))
-                .setVarFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIManualIntegerExperiment/BEST_VAR.csv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIManualIntegerExperiment/BEST_FUN.csv"))
+                .setVarFileOutputContext(new DefaultFileOutputContext("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIManualIntegerExperiment/BEST_VAR.csv"))
                 .print();
 
             JMetalLogger.logger.info("Best hypervolume: " + bestHypervolume);
