@@ -15,6 +15,8 @@ import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
 import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
 
 /**
@@ -45,12 +47,16 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
 
     SelectionOperator<List<CompositeSolution>, CompositeSolution> selection = new RandomSelection<>();
 
+    SolutionListEvaluator<CompositeSolution> evaluator =
+        new MultiThreadedSolutionListEvaluator<CompositeSolution>(8);
+
     int populationSize = 100;
     int maxEvaluations = 100000;
     NSGAII<CompositeSolution> algorithm = new NSGAIIBuilder<>(problem, crossover, mutation,
         populationSize)
         .setSelectionOperator(selection)
         .setMaxEvaluations(maxEvaluations)
+        .setSolutionListEvaluator(evaluator)
         .build();
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
@@ -58,6 +64,8 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
 
     List<CompositeSolution> population = algorithm.result();
     long computingTime = algorithmRunner.getComputingTime();
+
+    evaluator.shutdown();
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 

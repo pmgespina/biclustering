@@ -1,5 +1,7 @@
 package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
+import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +20,8 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
-import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
 
 /**
  * Class for configuring and running the NSGA-II algorithm (binary encoding)
@@ -48,12 +51,16 @@ public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
 
     SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<>();
 
+    SolutionListEvaluator<BinarySolution> evaluator =
+        new MultiThreadedSolutionListEvaluator<BinarySolution>(8);
+
     int populationSize = 100;
     int maxEvaluations = 100000;
     Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<>(problem, crossover, mutation,
         populationSize)
         .setSelectionOperator(selection)
         .setMaxEvaluations(maxEvaluations)
+        .setSolutionListEvaluator(evaluator)
         .build();
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
@@ -61,6 +68,8 @@ public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
 
     List<BinarySolution> population = algorithm.result();
     long computingTime = algorithmRunner.getComputingTime();
+
+    evaluator.shutdown();
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
 
