@@ -33,7 +33,7 @@ import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.PISAHypervolume;
 import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.errorchecking.JMetalException;
-import org.uma.jmetal.util.genedataloader.GeneDataLoader;
+import org.uma.jmetal.util.genedataloader.DataLoader;
 
 
 /**
@@ -67,7 +67,7 @@ public class NSGAIIComputingReferenceParetoFrontsIntegerStudy {
     }
     String experimentBaseDirectory = args[0];
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    double[][] matrix = DataLoader.CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     List<ExperimentProblem<CompositeSolution>> problemList = new ArrayList<>();

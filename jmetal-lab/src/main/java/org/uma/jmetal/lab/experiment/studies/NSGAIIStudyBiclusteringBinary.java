@@ -31,7 +31,7 @@ import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.PISAHypervolume;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.errorchecking.JMetalException;
-import org.uma.jmetal.util.genedataloader.GeneDataLoader;
+import org.uma.jmetal.util.genedataloader.DataLoader;
 
 /**
  * Example of experimental study based on solving the ZDT problems with four versions of NSGA-II,
@@ -62,7 +62,7 @@ public class NSGAIIStudyBiclusteringBinary {
     }
     String experimentBaseDirectory = args[0];
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
+    double[][] matrix = DataLoader.CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     List<ExperimentProblem<BinarySolution>> problemList = new ArrayList<>();

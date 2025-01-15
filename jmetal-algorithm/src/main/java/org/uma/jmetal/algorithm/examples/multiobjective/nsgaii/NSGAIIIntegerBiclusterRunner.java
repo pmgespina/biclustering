@@ -17,7 +17,7 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
-import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
+import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
 
 /**
  * Class for configuring and running the NSGA-II algorithm (binary encoding)
@@ -33,8 +33,7 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
    */
   public static void main(String[] args) throws IOException {
 
-    
-    double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    double[][] matrix = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     MultiIntegerBiclustering problem = new MultiIntegerBiclustering(matrix) ;

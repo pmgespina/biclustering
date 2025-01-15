@@ -19,7 +19,7 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
-import org.uma.jmetal.util.genedataloader.GeneDataLoader;
+import org.uma.jmetal.util.genedataloader.DataLoader;
 import org.uma.jmetal.util.observer.impl.FitnessObserver;
 /**
  * Class to configure and run a generational genetic algorithm. The target problem is OneMax.
@@ -37,7 +37,7 @@ public class ObservableGeneticAlgorithmIntegerBiclusterRunner {
     MutationOperator<CompositeSolution> mutation;
     SelectionOperator<List<CompositeSolution>, CompositeSolution> selection;
 
-    double[][] matrix = GeneDataLoader.loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
+    double[][] matrix = DataLoader.CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x100.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     FitnessObserver fitnessObserver = new FitnessObserver(100); // Log every 10 evaluations

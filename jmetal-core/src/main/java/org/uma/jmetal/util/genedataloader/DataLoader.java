@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneDataLoader {
+public class DataLoader {
 
-    public static double[][] loadGeneExpressionMatrix(String filePath) throws IOException {
+    public static double[][] CSVtoDoubleMatrix(String filePath) throws IOException {
         List<double[]> data = new ArrayList<>();
         
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {

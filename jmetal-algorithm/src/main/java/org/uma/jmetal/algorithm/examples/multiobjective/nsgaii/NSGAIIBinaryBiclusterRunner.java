@@ -1,6 +1,6 @@
 package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
-import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
+import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +38,7 @@ public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
   public static void main(String[] args) throws IOException {
 
     
-    double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+    double[][] matrix = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     BinaryProblem problem = new MultiBinaryBiclustering(matrix) ;

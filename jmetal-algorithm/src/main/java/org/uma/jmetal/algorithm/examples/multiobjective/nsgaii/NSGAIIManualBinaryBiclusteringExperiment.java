@@ -24,14 +24,14 @@ import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.archive.impl.NonDominatedSolutionListArchive;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
-import static org.uma.jmetal.util.genedataloader.GeneDataLoader.loadGeneExpressionMatrix;
+import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
 
 public class NSGAIIManualBinaryBiclusteringExperiment extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws IOException {
         int numRuns = 25;  // Number of times to run the algorithm
         List<List<BinarySolution>> paretoFronts = new ArrayList<>();
 
-        double[][] matrix = loadGeneExpressionMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
+        double[][] matrix = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
         matrix = NormalizeUtils.normalize(matrix);
 
         // Problem configuration
