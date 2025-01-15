@@ -1,9 +1,8 @@
 package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.uma.jmetal.algorithm.Algorithm;
@@ -26,6 +25,8 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.NormalizeUtils;
 import org.uma.jmetal.util.SolutionListUtils;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
 import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
 
 public class NSGAIIHyperparameterTuning {
@@ -68,67 +69,32 @@ public class NSGAIIHyperparameterTuning {
         int[] maxEvaluationsList = {100000, 500000, 1000000};
 
         // Store results
-        List<Map<String, Object>> results = new ArrayList<>();
+        String outputFile = encoding.equals("binary") ? "HyperparameterTuningBin.txt" : "HyperparameterTuningInt.txt";
 
-        if (encoding.equals("binary")) {
-            double [][] referenceFront = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts/Multi Objective. Binary Encoding Biclustering.csv");
-            for (double crossoverProbability : crossoverProbabilities) {
-                for (double mutationProbability : mutationProbabilities) {
-                    for (int maxEvaluations : maxEvaluationsList) {
-                        // Configure the operators
-                        CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverProbability);
-                        MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationProbability);
-                        SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<>();
-    
-                        // Build and run the algorithm
-                        Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<>(binaryProblem, crossover, mutation, populationSize)
-                                .setSelectionOperator(selection)
-                                .setMaxEvaluations(maxEvaluations)
-                                .build();
-    
-                        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-                        List<BinarySolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
-    
-                        // Compute hypervolume
-                        PISAHypervolume hypervolume = new PISAHypervolume(referenceFront);
-                        double[][] front = population.stream()
-                            .map(solution -> IntStream.range(0, solution.objectives().length)
-                                                    .mapToDouble(i -> solution.objectives()[i])
-                                                    .toArray())
-                            .toArray(double[][]::new);
-                        double hv = hypervolume.compute(front);
-    
-                        // Store result
-                        results.add(Map.of(
-                                "crossoverProbability", crossoverProbability,
-                                "mutationProbability", mutationProbability,
-                                "maxEvaluations", maxEvaluations,
-                                "hypervolume", hv
-                        ));
-    
-                        System.out.println("Evaluated config: " + results.get(results.size() - 1));
-                    }
-                }
-            }
-        } else if (encoding.equals("integer")) {
-            double [][] referenceFront = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIReferenceFrontIntegerExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts/Multi Objective Integer Encoding Biclustering.csv");
-            for (double crossoverProbability : crossoverProbabilities) {
-                for (double replicatesProbability : replicatesProbabilities) {
+        try(FileWriter writer = new FileWriter(outputFile)) {
+            if (encoding.equals("binary")) {
+                double [][] referenceFront = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts/Multi Objective. Binary Encoding Biclustering.csv");
+                for (double crossoverProbability : crossoverProbabilities) {
                     for (double mutationProbability : mutationProbabilities) {
                         for (int maxEvaluations : maxEvaluationsList) {
                             // Configure the operators
-                            IntegerBiclusterCrossover crossover = new IntegerBiclusterCrossover(crossoverProbability, replicatesProbability);
-                            IntegerBiclusterMutation mutation = new IntegerBiclusterMutation(mutationProbability);
-                            SelectionOperator<List<CompositeSolution>, CompositeSolution> selection = new RandomSelection<>();
+                            CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverProbability);
+                            MutationOperator<BinarySolution> mutation = new BitFlipMutation(mutationProbability);
+                            SelectionOperator<List<BinarySolution>, BinarySolution> selection = new BinaryTournamentSelection<>();
+
+                            SolutionListEvaluator<BinarySolution> evaluator = new MultiThreadedSolutionListEvaluator<BinarySolution>(8);
         
                             // Build and run the algorithm
-                            Algorithm<List<CompositeSolution>> algorithm = new NSGAIIBuilder<>(integerProblem, crossover, mutation, populationSize)
+                            Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<>(binaryProblem, crossover, mutation, populationSize)
                                     .setSelectionOperator(selection)
                                     .setMaxEvaluations(maxEvaluations)
+                                    .setSolutionListEvaluator(evaluator)
                                     .build();
         
                             AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-                            List<CompositeSolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
+                            List<BinarySolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
+
+                            evaluator.shutdown();
         
                             // Compute hypervolume
                             PISAHypervolume hypervolume = new PISAHypervolume(referenceFront);
@@ -139,23 +105,60 @@ public class NSGAIIHyperparameterTuning {
                                 .toArray(double[][]::new);
                             double hv = hypervolume.compute(front);
         
-                            // Store result
-                            results.add(Map.of(
-                                    "crossoverProbability", crossoverProbability,
-                                    "replicatesProbability", replicatesProbability,
-                                    "mutationProbability", mutationProbability,
-                                    "maxEvaluations", maxEvaluations,
-                                    "hypervolume", hv
-                            ));
-        
-                            System.out.println("Evaluated config: " + results.get(results.size() - 1));
+                            String result = String.format("Configuration: {maxEvaluations=%d, crossoverProbability=%.1f, hypervolume=%.10f, mutationProbability=%.3f}",
+                                        maxEvaluations, crossoverProbability, hv, mutationProbability);
+                            writer.write(result + "\n");
+
+                            System.out.println("Line written to file: " + result);
+                        }
+                    }
+                }
+            } else if (encoding.equals("integer")) {
+                double [][] referenceFront = CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/fabia100x100/NSGAIIReferenceFrontIntegerExperiment/NSGAIIComputingReferenceParetoFrontsIntegerStudy/referenceFronts/Multi Objective Integer Encoding Biclustering.csv");
+                for (double crossoverProbability : crossoverProbabilities) {
+                    for (double replicatesProbability : replicatesProbabilities) {
+                        for (double mutationProbability : mutationProbabilities) {
+                            for (int maxEvaluations : maxEvaluationsList) {
+                                // Configure the operators
+                                IntegerBiclusterCrossover crossover = new IntegerBiclusterCrossover(crossoverProbability, replicatesProbability);
+                                IntegerBiclusterMutation mutation = new IntegerBiclusterMutation(mutationProbability);
+                                SelectionOperator<List<CompositeSolution>, CompositeSolution> selection = new RandomSelection<>();
+
+                                SolutionListEvaluator<CompositeSolution> evaluator = new MultiThreadedSolutionListEvaluator<CompositeSolution>(8);
+            
+                                // Build and run the algorithm
+                                Algorithm<List<CompositeSolution>> algorithm = new NSGAIIBuilder<>(integerProblem, crossover, mutation, populationSize)
+                                        .setSelectionOperator(selection)
+                                        .setMaxEvaluations(maxEvaluations)
+                                        .setSolutionListEvaluator(evaluator)
+                                        .build();
+            
+                                AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+                                List<CompositeSolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
+
+                                evaluator.shutdown();
+            
+                                // Compute hypervolume
+                                PISAHypervolume hypervolume = new PISAHypervolume(referenceFront);
+                                double[][] front = population.stream()
+                                    .map(solution -> IntStream.range(0, solution.objectives().length)
+                                                            .mapToDouble(i -> solution.objectives()[i])
+                                                            .toArray())
+                                    .toArray(double[][]::new);
+                                double hv = hypervolume.compute(front);
+            
+                                String result = String.format("Configuration: {maxEvaluations=%d, crossoverProbability=%.1f, hypervolume=%.10f, mutationProbability=%.3f}",
+                                maxEvaluations, crossoverProbability, hv, mutationProbability);
+                                writer.write(result + "\n");
+
+                                System.out.println("Line written to file: " + result);
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Print or save results
-        results.forEach(System.out::println);
+        System.out.println("Configurations written to file " + outputFile);
     }
 }
