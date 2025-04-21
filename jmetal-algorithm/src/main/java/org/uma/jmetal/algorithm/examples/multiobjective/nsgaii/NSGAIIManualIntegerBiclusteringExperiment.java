@@ -71,7 +71,7 @@ public class NSGAIIManualIntegerBiclusteringExperiment extends AbstractAlgorithm
                                         .toArray())
                 .toArray(double[][]::new);
             double currentHypervolume = hypervolume.compute(front);
-
+            
             // Update best Pareto front based on hypervolume
             if (currentHypervolume > bestHypervolume) {
                 bestHypervolume = currentHypervolume;
