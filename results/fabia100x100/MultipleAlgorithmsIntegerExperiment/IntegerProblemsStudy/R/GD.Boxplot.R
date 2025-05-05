@@ -1,0 +1,27 @@
+postscript("GD.Boxplot.eps", horizontal=FALSE, onefile=FALSE, height=8, width=12, pointsize=10)
+resultDirectory<-"../data"
+qIndicator <- function(indicator, problem)
+{
+fileNSGAII<-paste(resultDirectory, "NSGAII", sep="/")
+fileNSGAII<-paste(fileNSGAII, problem, sep="/")
+fileNSGAII<-paste(fileNSGAII, indicator, sep="/")
+NSGAII<-scan(fileNSGAII)
+
+fileSPEA2<-paste(resultDirectory, "SPEA2", sep="/")
+fileSPEA2<-paste(fileSPEA2, problem, sep="/")
+fileSPEA2<-paste(fileSPEA2, indicator, sep="/")
+SPEA2<-scan(fileSPEA2)
+
+fileMOCell<-paste(resultDirectory, "MOCell", sep="/")
+fileMOCell<-paste(fileMOCell, problem, sep="/")
+fileMOCell<-paste(fileMOCell, indicator, sep="/")
+MOCell<-scan(fileMOCell)
+
+algs<-c("NSGAII","SPEA2","MOCell")
+boxplot(NSGAII,SPEA2,MOCell,names=algs, notch = TRUE)
+titulo <-paste(indicator, problem, sep=":")
+title(main=titulo)
+}
+par(mfrow=c(1,2))
+indicator<-"GD"
+qIndicator(indicator, "Multi Objective Integer Encoding Biclustering")
