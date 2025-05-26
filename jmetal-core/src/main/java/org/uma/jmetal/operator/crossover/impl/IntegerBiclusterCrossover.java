@@ -83,12 +83,12 @@ public class IntegerBiclusterCrossover implements CrossoverOperator<CompositeSol
             offspringConditions1.addAll(parentConditions1.variables().subList(0, crossoverPointConditions));
             offspringConditions1.addAll(parentConditions2.variables().subList(crossoverPointConditions, parentConditions2.variables().size()));
             Check.that(offspringConditions1.size() == parentConditions1.variables().size(), "The parentConditions1 and the offspringConditions1 must have the same length");
-            replaceDuplicates(offspringGenes2);
+            replaceDuplicates(offspringConditions1);
 
             offspringGenes2.addAll(parentGenes2.variables().subList(0, crossoverPointGenes));
             offspringGenes2.addAll(parentGenes1.variables().subList(crossoverPointGenes, parentGenes1.variables().size()));
             Check.that(offspringGenes2.size() == parentGenes2.variables().size(), "The parentGenes2 and the offspringGenes2 must have the same length");
-            replaceDuplicates(offspringConditions1);
+            replaceDuplicates(offspringGenes2);
 
             offspringConditions2.addAll(parentConditions2.variables().subList(0, crossoverPointConditions));
             offspringConditions2.addAll(parentConditions1.variables().subList(crossoverPointConditions, parentConditions1.variables().size()));
