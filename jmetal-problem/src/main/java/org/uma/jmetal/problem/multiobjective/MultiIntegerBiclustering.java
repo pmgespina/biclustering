@@ -125,7 +125,7 @@ public class MultiIntegerBiclustering implements Problem<CompositeSolution> {
     private double fitnessMSR(List<Integer> selectedGenes, List<Integer> selectedConditions) {
         int sizeBicluster = selectedGenes.size() * selectedConditions.size();
 
-        /*Once we have the indexes of the biclusters we can compute the metric */
+        // Once we have the indexes of the biclusters we can compute the metric
         double overallMean = overallMean(selectedGenes, selectedConditions);
         double valueTSR = 0;
 
@@ -146,8 +146,8 @@ public class MultiIntegerBiclustering implements Problem<CompositeSolution> {
     }
 
     private double fitnessBSize(List<Integer> selectedGenes, List<Integer> selectedConditions, double alpha) {
-        /* We already have this metric normalized because we give the rows (same with columns) of the bicluster a certain weight, 
-        but this is already divided by the whole rows of the input matrix */
+        // We already have this metric normalized because we give the rows (same with columns) of the bicluster a certain weight, 
+        // but this is already divided by the whole rows of the input matrix
         List<Integer> filteredGenes = selectedGenes.stream()
                 .filter(value -> value != -1) // Keep values that actually belong to the bicluster
                 .collect(Collectors.toList());

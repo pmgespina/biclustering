@@ -85,12 +85,12 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
     }
 
     private double fitnessMSR(BinarySet bicluster) {
-        /*We firstly fill the indexes of the bicluster into the selectedGenes list and selectedConditions list */
+        // We firstly fill the indexes of the bicluster into the selectedGenes list and selectedConditions list
         List<Integer> selectedGenes = new ArrayList<>();
         List<Integer> selectedConditions = new ArrayList<>();
 
-        // Va desde cero hasta el numero de genes - 1 rellenando según el array solución diga que el gen en el indice i está o no en el bicluster
-        // Recorre toda la representación binaria del bicluster para almacenar índices en selectedGenes de los que pertenecen al bicluster 
+        // It goes from zero up to the number of genes - 1, filling the list based on whether the solution array indicates that the gene at index i is or is not in the bicluster
+        // It iterates over the entire binary representation of the bicluster to store in selectedGenes the indices of those that belong to the bicluster
         for (int i = 0; i < numGenes; i++) {
             if (bicluster.get(i)) {
                 selectedGenes.add(i);
@@ -99,14 +99,15 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
         
         for (int j = numGenes; j < numGenes + numConditions; j++) {
             if (bicluster.get(j)) {
-                selectedConditions.add(j - numGenes); // Tenemos que restarle el número de genes porque sino el índice de la columna no representaría a la columna
+                selectedConditions.add(j - numGenes); // We have to subtract the number of genes because otherwise the column index wouldn't actually represent the column
+
             }
         }
 
         int sizeBicluster = selectedGenes.size() * selectedConditions.size();
         if (sizeBicluster == 0) return Double.POSITIVE_INFINITY;
 
-        /*Once we have the indexes of the biclusters we can compute the metric */
+        // Once we have the indexes of the biclusters we can compute the metric
         double overallMean = overallMean(selectedGenes, selectedConditions);
         double valueTSR = 0;
 
@@ -124,7 +125,6 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
     }
 
     private double fitnessBSize(BinarySet bicluster, double alpha) {
-        /*We firstly fill the indexes of the bicluster into the selectedGenes list and selectedConditions list */
         List<Integer> selectedGenes = new ArrayList<>();
         List<Integer> selectedConditions = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
 
         for (int j = numGenes; j < numGenes + numConditions; j++) {
             if (bicluster.get(j)) {
-                selectedConditions.add(j - numGenes); // Tenemos que restarle el número de genes porque sino el índice de la columna no representaría a la columna
+                selectedConditions.add(j - numGenes);
             }
         }
 
@@ -147,7 +147,6 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
     }
 
     private double fitnessrVAR(BinarySet bicluster) {
-        /*We firstly fill the indexes of the bicluster into the selectedGenes list and selectedConditions list */
         List<Integer> selectedGenes = new ArrayList<>();
         List<Integer> selectedConditions = new ArrayList<>();
 
@@ -159,7 +158,7 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
 
         for (int j = numGenes; j < numGenes + numConditions; j++) {
             if (bicluster.get(j)) {
-                selectedConditions.add(j - numGenes); // Tenemos que restarle el número de genes porque sino el índice de la columna no representaría a la columna
+                selectedConditions.add(j - numGenes);
             }
         }
 
@@ -180,7 +179,7 @@ public class MultiBinaryBiclustering extends AbstractBinaryProblem{
 
     private double overallMean(List<Integer> selectedGenes, List<Integer> selectedConditions) {
         double sum = 0;
-        int numElems = selectedGenes.size() * selectedConditions.size(); // porque estamos calculando medidas del bicluster, no de toda la matriz de expresión génica
+        int numElems = selectedGenes.size() * selectedConditions.size();
         for (Integer gene : selectedGenes) {
             for (Integer condition : selectedConditions) {
                 sum += geneExpressionMatrix[gene][condition];
