@@ -17,8 +17,8 @@ import org.uma.jmetal.lab.experiment.component.impl.GenerateLatexTablesWithStati
 import org.uma.jmetal.lab.experiment.component.impl.GenerateWilcoxonTestTablesWithR;
 import org.uma.jmetal.lab.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.lab.experiment.util.ExperimentProblem;
-import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
-import org.uma.jmetal.operator.mutation.impl.IntegerBiclusterMutation;
+import org.uma.jmetal.operator.crossover.impl.SinglePointCrossover;
+import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.multiobjective.MultiIntegerBiclustering;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
@@ -78,7 +78,7 @@ public class NSGAIIStudyBiclusteringInteger {
             .setExperimentBaseDirectory(experimentBaseDirectory)
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontIntegerExperiment/NSGAIIComputingReferenceParetoFrontsIntegerStudy/referenceFronts")
+            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontIntegerExperiment2D/NSGAIIComputingReferenceParetoFrontsIntegerStudy/referenceFronts")
             .setIndicatorList(
                 List.of(
                     new Epsilon(),
@@ -109,80 +109,42 @@ public class NSGAIIStudyBiclusteringInteger {
    */
   static List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> configureAlgorithmList(
       List<ExperimentProblem<CompositeSolution>> problemList) {
+
     List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> algorithms = new ArrayList<>();
 
+    int[] populationSizes = {50, 100, 200};
+    double[] crossoverProbabilities = {0.1, 0.5, 0.9};
+    double[] mutationProbabilities = {0.001, 0.01, 0.1};
+    int[] iterations = {50, 100, 200};
+
     for (int run = 0; run < INDEPENDENT_RUNS; run++) {
-      for (var experimentProblem : problemList) {
-        nsgaIIa(algorithms, run, experimentProblem);
-        nsgaIIb(algorithms, run, experimentProblem);
-        nsgaIIc(algorithms, run, experimentProblem);
-        nsgaIId(algorithms, run, experimentProblem);
+      for (ExperimentProblem<CompositeSolution> problem : problemList) {
+        for (int popSize : populationSizes) {
+          for (double crossoverProb : crossoverProbabilities) {
+            for (double mutationProb : mutationProbabilities) {
+              for (int iterationCount : iterations) {
+
+                int maxEvaluations = popSize * iterationCount;
+
+                Algorithm<List<CompositeSolution>> algorithm =
+                    new NSGAIIBuilder<>(
+                        problem.getProblem(),
+                        new SinglePointCrossover(crossoverProb),
+                        new BitFlipMutation(mutationProb),
+                        popSize)
+                        .setMaxEvaluations(maxEvaluations)
+                        .build();
+
+                String tag = String.format("NSGAII_P%d_C%.2f_M%.3f_I%d",
+                    popSize, crossoverProb, mutationProb, iterationCount);
+
+                algorithms.add(new ExperimentAlgorithm<>(algorithm, tag, problem, run));
+              }
+            }
+          }
+        }
       }
     }
     return algorithms;
-  }
-
-  private static void nsgaIId(
-      List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> algorithms, int run,
-      ExperimentProblem<CompositeSolution> experimentProblem) {
-    Algorithm<List<CompositeSolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new IntegerBiclusterCrossover(1.0),
-            new IntegerBiclusterMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIId", experimentProblem, run));
-  }
-
-  private static void nsgaIIc(
-      List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> algorithms, int run,
-      ExperimentProblem<CompositeSolution> experimentProblem) {
-    Algorithm<List<CompositeSolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new IntegerBiclusterCrossover(1.0),
-            new IntegerBiclusterMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            10)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIc", experimentProblem, run));
-  }
-
-  private static void nsgaIIb(
-      List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> algorithms, int run,
-      ExperimentProblem<CompositeSolution> experimentProblem) {
-    Algorithm<List<CompositeSolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new IntegerBiclusterCrossover(1.0),
-            new IntegerBiclusterMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIb", experimentProblem, run));
-  }
-
-  private static void nsgaIIa(
-      List<ExperimentAlgorithm<CompositeSolution, List<CompositeSolution>>> algorithms, int run,
-      ExperimentProblem<CompositeSolution> experimentProblem) {
-    Algorithm<List<CompositeSolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new IntegerBiclusterCrossover(1.0),
-            new IntegerBiclusterMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIa", experimentProblem, run));
   }
 }

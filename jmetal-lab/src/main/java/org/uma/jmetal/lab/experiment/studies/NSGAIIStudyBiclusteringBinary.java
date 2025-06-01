@@ -78,7 +78,7 @@ public class NSGAIIStudyBiclusteringBinary {
             .setExperimentBaseDirectory(experimentBaseDirectory)
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts")
+            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontBinaryExperiment2D/NSGAIIComputingReferenceParetoFrontsBinaryStudy/referenceFronts")
             .setIndicatorList(
                 List.of(
                     new Epsilon(),
@@ -89,7 +89,7 @@ public class NSGAIIStudyBiclusteringBinary {
                     new InvertedGenerationalDistance(),
                     new InvertedGenerationalDistancePlus()))
             .setIndependentRuns(INDEPENDENT_RUNS)
-            .setNumberOfCores(8)
+            .setNumberOfCores(15)
             .build();
 
     new ExecuteAlgorithms<>(experiment).run(); // First step: Execution of all the configurations
@@ -109,80 +109,43 @@ public class NSGAIIStudyBiclusteringBinary {
    */
   static List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> configureAlgorithmList(
       List<ExperimentProblem<BinarySolution>> problemList) {
+
     List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms = new ArrayList<>();
 
+    int[] populationSizes = {50, 100, 200};
+    double[] crossoverProbabilities = {0.1, 0.5, 0.9};
+    double[] mutationProbabilities = {0.001, 0.01, 0.1};
+    int[] iterations = {50, 100, 200};
+
     for (int run = 0; run < INDEPENDENT_RUNS; run++) {
-      for (var experimentProblem : problemList) {
-        nsgaIIa(algorithms, run, experimentProblem);
-        nsgaIIb(algorithms, run, experimentProblem);
-        nsgaIIc(algorithms, run, experimentProblem);
-        nsgaIId(algorithms, run, experimentProblem);
+      for (ExperimentProblem<BinarySolution> problem : problemList) {
+        for (int popSize : populationSizes) {
+          for (double crossoverProb : crossoverProbabilities) {
+            for (double mutationProb : mutationProbabilities) {
+              for (int iterationCount : iterations) {
+
+                int maxEvaluations = popSize * iterationCount;
+
+                Algorithm<List<BinarySolution>> algorithm =
+                    new NSGAIIBuilder<>(
+                        problem.getProblem(),
+                        new SinglePointCrossover(crossoverProb),
+                        new BitFlipMutation(mutationProb),
+                        popSize)
+                        .setMaxEvaluations(maxEvaluations)
+                        .build();
+
+                String tag = String.format("NSGAII_P%d_C%.2f_M%.3f_I%d",
+                    popSize, crossoverProb, mutationProb, iterationCount);
+
+                algorithms.add(new ExperimentAlgorithm<>(algorithm, tag, problem, run));
+              }
+            }
+          }
+        }
       }
     }
     return algorithms;
   }
-
-  private static void nsgaIId(
-      List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms, int run,
-      ExperimentProblem<BinarySolution> experimentProblem) {
-    Algorithm<List<BinarySolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIId", experimentProblem, run));
-  }
-
-  private static void nsgaIIc(
-      List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms, int run,
-      ExperimentProblem<BinarySolution> experimentProblem) {
-    Algorithm<List<BinarySolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            10)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIc", experimentProblem, run));
-  }
-
-  private static void nsgaIIb(
-      List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms, int run,
-      ExperimentProblem<BinarySolution> experimentProblem) {
-    Algorithm<List<BinarySolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIb", experimentProblem, run));
-  }
-
-  private static void nsgaIIa(
-      List<ExperimentAlgorithm<BinarySolution, List<BinarySolution>>> algorithms, int run,
-      ExperimentProblem<BinarySolution> experimentProblem) {
-    Algorithm<List<BinarySolution>> algorithm =
-        new NSGAIIBuilder<>(
-            experimentProblem.getProblem(),
-            new SinglePointCrossover(1.0),
-            new BitFlipMutation(
-                1.0 / experimentProblem.getProblem().numberOfVariables()),
-            100)
-            .setMaxEvaluations(25000)
-            .build();
-    algorithms.add(
-        new ExperimentAlgorithm<>(algorithm, "NSGAIIa", experimentProblem, run));
-  }
+  
 }
