@@ -3,6 +3,7 @@ package org.uma.jmetal.lab.experiment.studies;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -17,8 +18,8 @@ import org.uma.jmetal.lab.experiment.component.impl.GenerateLatexTablesWithStati
 import org.uma.jmetal.lab.experiment.component.impl.GenerateWilcoxonTestTablesWithR;
 import org.uma.jmetal.lab.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.lab.experiment.util.ExperimentProblem;
-import org.uma.jmetal.operator.crossover.impl.SinglePointCrossover;
-import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
+import org.uma.jmetal.operator.crossover.impl.IntegerBiclusterCrossover;
+import org.uma.jmetal.operator.mutation.impl.IntegerBiclusterMutation;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.multiobjective.MultiIntegerBiclustering;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
@@ -129,13 +130,13 @@ public class NSGAIIStudyBiclusteringInteger {
                 Algorithm<List<CompositeSolution>> algorithm =
                     new NSGAIIBuilder<>(
                         problem.getProblem(),
-                        new SinglePointCrossover(crossoverProb),
-                        new BitFlipMutation(mutationProb),
+                        new IntegerBiclusterCrossover(crossoverProb, 0.5),
+                        new IntegerBiclusterMutation(mutationProb),
                         popSize)
                         .setMaxEvaluations(maxEvaluations)
                         .build();
 
-                String tag = String.format("NSGAII_P%d_C%.2f_M%.3f_I%d",
+                String tag = String.format(Locale.US, "NSGAII_P%d_C%.2f_M%.3f_I%d",
                     popSize, crossoverProb, mutationProb, iterationCount);
 
                 algorithms.add(new ExperimentAlgorithm<>(algorithm, tag, problem, run));

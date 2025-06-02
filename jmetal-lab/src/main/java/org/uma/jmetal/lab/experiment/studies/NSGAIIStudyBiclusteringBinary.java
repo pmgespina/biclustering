@@ -3,6 +3,7 @@ package org.uma.jmetal.lab.experiment.studies;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -78,7 +79,7 @@ public class NSGAIIStudyBiclusteringBinary {
             .setExperimentBaseDirectory(experimentBaseDirectory)
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontBinaryExperiment2D/NSGAIIComputingReferenceParetoFrontsBinaryStudy/referenceFronts")
+            .setReferenceFrontDirectory("/home/khaosdev/jMetalJava/fabia100x1000/NSGAIIReferenceFrontBinaryExperiment/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts")
             .setIndicatorList(
                 List.of(
                     new Epsilon(),
@@ -89,7 +90,7 @@ public class NSGAIIStudyBiclusteringBinary {
                     new InvertedGenerationalDistance(),
                     new InvertedGenerationalDistancePlus()))
             .setIndependentRuns(INDEPENDENT_RUNS)
-            .setNumberOfCores(15)
+            .setNumberOfCores(12)
             .build();
 
     new ExecuteAlgorithms<>(experiment).run(); // First step: Execution of all the configurations
@@ -135,7 +136,7 @@ public class NSGAIIStudyBiclusteringBinary {
                         .setMaxEvaluations(maxEvaluations)
                         .build();
 
-                String tag = String.format("NSGAII_P%d_C%.2f_M%.3f_I%d",
+                String tag = String.format(Locale.US, "NSGAII_P%d_C%.2f_M%.3f_I%d",
                     popSize, crossoverProb, mutationProb, iterationCount);
 
                 algorithms.add(new ExperimentAlgorithm<>(algorithm, tag, problem, run));
