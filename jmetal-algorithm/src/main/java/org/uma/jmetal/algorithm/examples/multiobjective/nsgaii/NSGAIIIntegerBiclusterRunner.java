@@ -15,6 +15,7 @@ import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
+import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
 import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
@@ -38,8 +39,9 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
 
     MultiIntegerBiclustering problem = new MultiIntegerBiclustering(matrix) ;
 
-    double crossoverProbability = 0.9;
-    IntegerBiclusterCrossover crossover = new IntegerBiclusterCrossover(crossoverProbability);
+    double crossoverProbability = 0.8;
+    double duplicatesProbability = 0.5;
+    IntegerBiclusterCrossover crossover = new IntegerBiclusterCrossover(crossoverProbability, duplicatesProbability);
 
     double mutationProbability = 0.2;
     IntegerBiclusterMutation mutation = new IntegerBiclusterMutation(mutationProbability);
@@ -61,7 +63,7 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();
 
-    List<CompositeSolution> population = algorithm.result();
+    List<CompositeSolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
     long computingTime = algorithmRunner.getComputingTime();
 
     evaluator.shutdown();

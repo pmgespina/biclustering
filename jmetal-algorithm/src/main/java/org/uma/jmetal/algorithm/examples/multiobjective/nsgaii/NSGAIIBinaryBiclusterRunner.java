@@ -1,7 +1,5 @@
 package org.uma.jmetal.algorithm.examples.multiobjective.nsgaii;
 
-import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -20,8 +18,10 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.NormalizeUtils;
+import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.MultiThreadedSolutionListEvaluator;
+import static org.uma.jmetal.util.genedataloader.DataLoader.CSVtoDoubleMatrix;
 
 /**
  * Class for configuring and running the NSGA-II algorithm (binary encoding)
@@ -43,7 +43,7 @@ public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
 
     BinaryProblem problem = new MultiBinaryBiclustering(matrix) ;
 
-    double crossoverProbability = 0.9;
+    double crossoverProbability = 0.8;
     CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(crossoverProbability);
 
     double mutationProbability = 0.2;
@@ -66,7 +66,7 @@ public class NSGAIIBinaryBiclusterRunner extends AbstractAlgorithmRunner {
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute();
 
-    List<BinarySolution> population = algorithm.result();
+    List<BinarySolution> population = SolutionListUtils.getNonDominatedSolutions(algorithm.result());
     long computingTime = algorithmRunner.getComputingTime();
 
     evaluator.shutdown();
