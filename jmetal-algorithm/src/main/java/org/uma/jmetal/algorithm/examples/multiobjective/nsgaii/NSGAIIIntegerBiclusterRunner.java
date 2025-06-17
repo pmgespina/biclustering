@@ -40,7 +40,7 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
     MultiIntegerBiclustering problem = new MultiIntegerBiclustering(matrix) ;
 
     double crossoverProbability = 0.8;
-    double duplicatesProbability = 0.5;
+    double duplicatesProbability = 0.1;
     IntegerBiclusterCrossover crossover = new IntegerBiclusterCrossover(crossoverProbability, duplicatesProbability);
 
     double mutationProbability = 0.2;
@@ -49,7 +49,7 @@ public class NSGAIIIntegerBiclusterRunner extends AbstractAlgorithmRunner {
     SelectionOperator<List<CompositeSolution>, CompositeSolution> selection = new RandomSelection<>();
 
     SolutionListEvaluator<CompositeSolution> evaluator =
-        new MultiThreadedSolutionListEvaluator<CompositeSolution>(8);
+        new MultiThreadedSolutionListEvaluator<CompositeSolution>(12);
 
     int populationSize = 100;
     int maxEvaluations = 100000;

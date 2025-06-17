@@ -71,7 +71,7 @@ public class NSGAIIComputingReferenceParetoFrontsBinaryStudy {
     }
     String experimentBaseDirectory = args[0];
 
-    double[][] matrix = DataLoader.CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_1000x1000.csv");
+    double[][] matrix = DataLoader.CSVtoDoubleMatrix("/home/khaosdev/jMetalJava/jMetal/resources/fabia_100x1000.csv");
     matrix = NormalizeUtils.normalize(matrix);
 
     List<ExperimentProblem<BinarySolution>> problemList = new ArrayList<>();
@@ -88,7 +88,7 @@ public class NSGAIIComputingReferenceParetoFrontsBinaryStudy {
                     .setExperimentBaseDirectory(experimentBaseDirectory)
                     .setOutputParetoFrontFileName("FUN")
                     .setOutputParetoSetFileName("VAR")
-                    .setReferenceFrontDirectory(experimentBaseDirectory + "/NSGAIIComputingReferenceParetoFrontsStudy/referenceFronts")
+                    .setReferenceFrontDirectory(experimentBaseDirectory + "/NSGAIIComputingReferenceParetoFrontsBinaryStudy/referenceFronts")
                     .setIndicatorList(Arrays.asList(
                             new Epsilon(),
                             new Spread(),

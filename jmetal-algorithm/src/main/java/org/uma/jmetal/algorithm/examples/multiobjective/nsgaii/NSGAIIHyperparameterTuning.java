@@ -79,7 +79,7 @@ public class NSGAIIHyperparameterTuning {
 
         try(FileWriter writer = new FileWriter(outputFile)) {
             if (encoding.equals("binary")) {
-                writer.write("Hyperparameter tuning for binary encoding with data " + args[1] + "\n");
+                writer.write("Hyperparameter tuning for binary encoding NSGA-II with data " + args[1] + "\n");
                 // Read and normalize the reference front for computing quality indicators
                 double[][] referenceFront = VectorUtils.readVectors(pathBinaryFront, ",");
                 double[][] normalizedReferenceFront = NormalizeUtils.normalize(referenceFront);
@@ -131,7 +131,7 @@ public class NSGAIIHyperparameterTuning {
                     }
                 }
             } else if (encoding.equals("integer")) {
-                writer.write("Hyperparameter tuning for integer encoding with data " + args[1] + "\n");
+                writer.write("Hyperparameter tuning for integer encoding NSGA-II with data " + args[1] + "\n");
                 double [][] referenceFront = VectorUtils.readVectors(pathIntegerFront, ",");
                 double[][] normalizedReferenceFront = NormalizeUtils.normalize(referenceFront);
                 for (double crossoverProbability : crossoverProbabilities) {
