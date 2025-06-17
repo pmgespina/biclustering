@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.mocell.MOCellBuilder;
+import org.uma.jmetal.algorithm.multiobjective.mosa.MOSA;
+import org.uma.jmetal.algorithm.multiobjective.mosa.cooling.impl.Exponential;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2Builder;
 import org.uma.jmetal.lab.experiment.Experiment;
@@ -38,6 +40,8 @@ import org.uma.jmetal.qualityindicator.impl.Spread;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.PISAHypervolume;
 import org.uma.jmetal.solution.compositesolution.CompositeSolution;
 import org.uma.jmetal.util.NormalizeUtils;
+import org.uma.jmetal.util.archive.impl.GenericBoundedArchive;
+import org.uma.jmetal.util.densityestimator.impl.CrowdingDistanceDensityEstimator;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 import org.uma.jmetal.util.genedataloader.DataLoader;
 
@@ -94,7 +98,7 @@ public class IntegerProblemsStudy {
             new InvertedGenerationalDistancePlus())
         )
         .setIndependentRuns(INDEPENDENT_RUNS)
-        .setNumberOfCores(8)
+        .setNumberOfCores(12)
         .build();
 
     new ExecuteAlgorithms<>(experiment).run();
@@ -120,10 +124,10 @@ public class IntegerProblemsStudy {
       for (ExperimentProblem<CompositeSolution> problem : problemList) {
         Algorithm<List<CompositeSolution>> algorithm = new NSGAIIBuilder<>(
                 problem.getProblem(),
-                new IntegerBiclusterCrossover(0.8, 0.15),
-                new IntegerBiclusterMutation(0.3),
-                100)
-                .setMaxEvaluations(25000)
+                new IntegerBiclusterCrossover(0.5, 0.20),
+                new IntegerBiclusterMutation(0.010),
+                200)
+                .setMaxEvaluations(40000)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
@@ -131,10 +135,10 @@ public class IntegerProblemsStudy {
       for (ExperimentProblem<CompositeSolution> problem : problemList) {
         Algorithm<List<CompositeSolution>> algorithm = new SPEA2Builder<>(
                 problem.getProblem(),
-                new IntegerBiclusterCrossover(0.8),
-                new IntegerBiclusterMutation(0.3))
-                .setMaxIterations(250)
-                .setPopulationSize(100)
+                new IntegerBiclusterCrossover(0.5, 0.2),
+                new IntegerBiclusterMutation(0.010))
+                .setMaxIterations(200)
+                .setPopulationSize(200)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
@@ -142,13 +146,30 @@ public class IntegerProblemsStudy {
       for (ExperimentProblem<CompositeSolution> problem : problemList) {
         Algorithm<List<CompositeSolution>> algorithm = new MOCellBuilder<>(
                 problem.getProblem(),
-                new IntegerBiclusterCrossover(0.8),
-                new IntegerBiclusterMutation(0.3))
-                .setMaxEvaluations(25000)
-                .setPopulationSize(100)
+                new IntegerBiclusterCrossover(0.5, 0.2),
+                new IntegerBiclusterMutation(0.010))
+                .setMaxEvaluations(40000)
+                .setPopulationSize(200)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
+
+      for (ExperimentProblem<CompositeSolution> problem : problemList) {
+        CompositeSolution initialSolution = problem.getProblem().createSolution();
+        problem.getProblem().evaluate(initialSolution);
+
+        Algorithm<List<CompositeSolution>> algorithm = new MOSA<>(
+            initialSolution,
+            problem.getProblem(),
+            40000,
+            new GenericBoundedArchive<>(200, new CrowdingDistanceDensityEstimator<>()),
+            new IntegerBiclusterMutation(0.010),
+            1.0,
+            new Exponential(0.95)
+        );
+        algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
+      }
+
     }
     return algorithms;
   }
