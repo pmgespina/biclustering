@@ -103,7 +103,7 @@ public class BinaryProblemsStudy {
             new InvertedGenerationalDistancePlus())
         )
         .setIndependentRuns(INDEPENDENT_RUNS)
-        .setNumberOfCores(8)
+        .setNumberOfCores(12)
         .build();
 
     new ExecuteAlgorithms<>(experiment).run();
@@ -129,11 +129,10 @@ public class BinaryProblemsStudy {
       for (ExperimentProblem<BinarySolution> problem : problemList) {
         Algorithm<List<BinarySolution>> algorithm = new NSGAIIBuilder<>(
                 problem.getProblem(),
-                new SinglePointCrossover(1.0),
-                new BitFlipMutation(
-                        1.0 / ((BinaryProblem) problem.getProblem()).numberOfBitsPerVariable().get(0)),
-                100)
-                .setMaxEvaluations(25000)
+                new SinglePointCrossover(0.9),
+                new BitFlipMutation(0.010),
+                200)
+                .setMaxEvaluations(40000)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
@@ -141,11 +140,10 @@ public class BinaryProblemsStudy {
       for (ExperimentProblem<BinarySolution> problem : problemList) {
         Algorithm<List<BinarySolution>> algorithm = new SPEA2Builder<>(
                 problem.getProblem(),
-                new SinglePointCrossover(1.0),
-                new BitFlipMutation(
-                        1.0 / ((BinaryProblem) problem.getProblem()).numberOfBitsPerVariable().get(0)))
-                .setMaxIterations(250)
-                .setPopulationSize(100)
+                new SinglePointCrossover(0.9),
+                new BitFlipMutation(0.010))
+                .setMaxIterations(200)
+                .setPopulationSize(200)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
@@ -153,11 +151,11 @@ public class BinaryProblemsStudy {
       for (ExperimentProblem<BinarySolution> problem : problemList) {
         Algorithm<List<BinarySolution>> algorithm = new MOCellBuilder<>(
                 problem.getProblem(),
-                new SinglePointCrossover(1.0),
+                new SinglePointCrossover(0.9),
                 new BitFlipMutation(
-                        1.0 / ((BinaryProblem) problem.getProblem()).numberOfBitsPerVariable().get(0)))
-                .setMaxEvaluations(25000)
-                .setPopulationSize(100)
+                        0.010))
+                .setMaxEvaluations(40000)
+                .setPopulationSize(200)
                 .build();
         algorithms.add(new ExperimentAlgorithm<>(algorithm, problem, run));
       }
@@ -168,17 +166,17 @@ public class BinaryProblemsStudy {
         SelectionOperator<List<BinarySolution>, BinarySolution> parentsSelection;
         SelectionOperator<List<BinarySolution>, List<BinarySolution>> newGenerationSelection;
 
-        crossoverOperator = new HUXCrossover(1.0);
+        crossoverOperator = new HUXCrossover(0.9);
         parentsSelection = new RandomSelection<>();
         newGenerationSelection = new RankingAndCrowdingSelection<>(100);
-        mutationOperator = new BitFlipMutation(0.35);
+        mutationOperator = new BitFlipMutation(0.010);
         Algorithm<List<BinarySolution>> algorithm = new MOCHCBuilder(
                 (BinaryProblem) problem.getProblem())
                 .setInitialConvergenceCount(0.25)
                 .setConvergenceValue(3)
                 .setPreservedPopulation(0.05)
-                .setPopulationSize(100)
-                .setMaxEvaluations(25000)
+                .setPopulationSize(200)
+                .setMaxEvaluations(40000)
                 .setCrossover(crossoverOperator)
                 .setNewGenerationSelection(newGenerationSelection)
                 .setCataclysmicMutation(mutationOperator)
